@@ -1,7 +1,7 @@
 package com.todomypet.petservice.dto;
 
-import com.todomypet.petservice.domain.PetGradeType;
-import com.todomypet.petservice.domain.PetType;
+import com.todomypet.petservice.domain.node.PetGradeType;
+import com.todomypet.petservice.domain.node.PetType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

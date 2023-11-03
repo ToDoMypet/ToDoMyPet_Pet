@@ -1,4 +1,4 @@
-package com.todomypet.petservice.domain;
+package com.todomypet.petservice.domain.node;
 
 import lombok.Getter;
 

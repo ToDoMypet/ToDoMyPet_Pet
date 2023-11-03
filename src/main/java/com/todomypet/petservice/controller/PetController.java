@@ -1,8 +1,6 @@
 package com.todomypet.petservice.controller;
 
-import com.todomypet.petservice.dto.AddPetReqDTO;
-import com.todomypet.petservice.dto.AddPetResDTO;
-import com.todomypet.petservice.dto.SuccessResDTO;
+import com.todomypet.petservice.dto.*;
 import com.todomypet.petservice.service.PetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -26,5 +24,13 @@ public class PetController {
     public SuccessResDTO<AddPetResDTO> addPet(@RequestBody AddPetReqDTO addPetReqDTO) {
         AddPetResDTO response = AddPetResDTO.builder().id(petService.addPet(addPetReqDTO)).build();
         return new SuccessResDTO<>(response);
+    }
+
+    @Operation(summary = "펫 입양", description = "키우는 펫을 추가합니다.")
+    @PostMapping("/adopt")
+    public SuccessResDTO<Void> adoptPet(@RequestHeader String userId,
+                                        @RequestBody AdoptPetReqDTO adoptPetReqDTO) {
+        petService.adoptPet(userId, adoptPetReqDTO);
+        return new SuccessResDTO<>(null);
     }
 }
