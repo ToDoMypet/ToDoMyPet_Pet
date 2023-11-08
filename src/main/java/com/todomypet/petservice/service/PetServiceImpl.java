@@ -97,6 +97,7 @@ public class PetServiceImpl implements PetService {
                     .maxExperience(pet.getMaxExperience())
                     .experience(adopt.getExperience())
                     .grade(pet.getGrade())
+                    .graduated(adopt.getGraduated())
                     .build();
 
             getMyPetInfoResDTOList.add(getMyPetInfoResDTO);

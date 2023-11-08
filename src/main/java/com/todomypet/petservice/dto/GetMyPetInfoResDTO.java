@@ -12,4 +12,5 @@ public class GetMyPetInfoResDTO {
     private int maxExperience;
     private int experience;
     private PetGradeType grade;
+    private boolean graduated;
 }
