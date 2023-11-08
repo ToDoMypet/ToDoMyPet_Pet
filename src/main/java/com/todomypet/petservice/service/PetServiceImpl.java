@@ -4,6 +4,8 @@ import com.github.f4b6a3.ulid.UlidCreator;
 import com.todomypet.petservice.domain.node.Pet;
 import com.todomypet.petservice.domain.relationship.Adopt;
 import com.todomypet.petservice.dto.*;
+import com.todomypet.petservice.exception.CustomException;
+import com.todomypet.petservice.exception.ErrorCode;
 import com.todomypet.petservice.repository.AdoptRepository;
 import com.todomypet.petservice.repository.PetRepository;
 import jakarta.transaction.Transactional;
@@ -118,5 +120,12 @@ public class PetServiceImpl implements PetService {
                 .personality(pet.getPersonality())
                 .description(pet.getPersonality())
                 .build();
+    }
+
+    @Override
+    public void renamePet(String userId, RenamePetReqDTO renamePetReqDTO) {
+        Adopt adopt = adoptRepository.getOneAdoptByUserIdAndSignatureCode(userId, renamePetReqDTO.getSignatureCode())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_COLLECT_USER_AND_SIGNATURE_CODE));
+        adoptRepository.renamePet(userId, renamePetReqDTO.getSignatureCode(), renamePetReqDTO.getRename());
     }
 }

@@ -10,4 +10,5 @@ public interface PetService {
     AdoptedPetResListDTO getAdoptedPetList(String userId);
     GetMyPetInfoResListDTO getMyPetInfo(String userId, String signatureCode);
     PetDetailResDTO getPetDetail(String userId, String seq);
+    void renamePet(String userId, RenamePetReqDTO renamePetReqDTO);
 }

@@ -57,4 +57,11 @@ public class PetController {
         PetDetailResDTO response = petService.getPetDetail(userId, seq);
         return new SuccessResDTO<PetDetailResDTO>(response);
     }
+
+    @PutMapping("/rename")
+    public SuccessResDTO<Void> renamePet(@RequestHeader String userId,
+                                     @RequestBody RenamePetReqDTO renamePetReqDTO) {
+        petService.renamePet(userId, renamePetReqDTO);
+        return new SuccessResDTO<Void>(null);
+    }
 }
