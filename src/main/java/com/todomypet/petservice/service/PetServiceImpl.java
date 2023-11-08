@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +44,29 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    @Transactional
     public void adoptPet(String userId, AdoptPetReqDTO adoptPetReqDTO) {
         LocalDateTime adoptAt = LocalDateTime.parse(LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+
+        StringBuilder signatureCode = new StringBuilder();
+        Random rnd = new Random();
+
+        while (true) {
+            for (int i = 0; i < 2; i++) {
+                signatureCode.append((char)(rnd.nextInt(26) + 65));
+            }
+            for (int i = 0; i < 9; i++) {
+                signatureCode.append(rnd.nextInt(10));
+            }
+
+            if (adoptRepository.getOneAdoptBySignatureCode(signatureCode.toString()).isEmpty()) {
+                break;
+            }
+        }
+
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, adoptPetReqDTO.getPetId(),
-                adoptPetReqDTO.getRename(), adoptAt, UlidCreator.getUlid().toString());
+                adoptPetReqDTO.getRename(), adoptAt, UlidCreator.getUlid().toString(), signatureCode.toString());
     }
 
     @Override

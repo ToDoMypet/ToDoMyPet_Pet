@@ -36,6 +36,9 @@ public class Adopt {
     @Property("experience")
     private int experience;
 
+    @Property("signatureCode")
+    private String signatureCode;
+
     @TargetNode
     private Pet pet;
 }

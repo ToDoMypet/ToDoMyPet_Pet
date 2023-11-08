@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @EnableNeo4jRepositories
 @Repository
@@ -15,11 +16,17 @@ public interface AdoptRepository extends Neo4jRepository<Adopt, Long> {
 
     @Query("MATCH (u:User{id:$userId}) WITH u " +
             "MATCH (p:Pet{id:$petId}) " +
-            "CREATE (u)-[:ADOPT{name:$rename, startedAt:$adoptAt, seq: $seq, graduated: false, experience: 0}]->(p)")
-    void createAdoptBetweenAdoptAndUser(String userId, String petId, String rename, LocalDateTime adoptAt, String seq);
+            "CREATE (u)-[:ADOPT{name:$rename, startedAt:$adoptAt, " +
+            "seq: $seq, graduated: false, experience: 0, signatureCode: $signatureCode}]->(p)")
+    void createAdoptBetweenAdoptAndUser(String userId, String petId, String rename, LocalDateTime adoptAt,
+                                        String seq, String signatureCode);
 
     @Query("MATCH (u:User{id:$userId}) WITH u " +
             "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE (p.grade = 'ADULT' AND a.graduated = true) OR (a.graduated = false) " +
             "RETURN a{.seq, .name, .graduated, .experience} ORDER BY a.seq DESC")
     List<Adopt> getAdoptList(String userId);
+
+    @Query("MATCH (User)-[a:ADOPT]->(Pet) " +
+            "WHERE a.signatureCode = $signatureCode RETURN a")
+    Optional<Adopt> getOneAdoptBySignatureCode(String signatureCode);
 }
