@@ -25,7 +25,7 @@ public class PetController {
     @PostMapping("/add")
     public SuccessResDTO<AddPetResDTO> addPet(@RequestBody AddPetReqDTO addPetReqDTO) {
         AddPetResDTO response = AddPetResDTO.builder().id(petService.addPet(addPetReqDTO)).build();
-        return new SuccessResDTO<>(response);
+        return new SuccessResDTO<AddPetResDTO>(response);
     }
 
     @Operation(summary = "펫 입양", description = "키우는 펫을 추가합니다.")
@@ -40,6 +40,14 @@ public class PetController {
     @GetMapping("/adopted-pet-list")
     public SuccessResDTO<AdoptedPetResListDTO> getAdoptedPetList(@RequestHeader String userId) {
         AdoptedPetResListDTO response = petService.getAdoptedPetList(userId);
-        return new SuccessResDTO<>(response);
+        return new SuccessResDTO<AdoptedPetResListDTO>(response);
+    }
+
+    @Operation(summary = "내 펫 정보", description = "일지에서 펫을 선택했을 때 불러오는 데이터입니다.")
+    @GetMapping("/my-pet-info/{signatureCode}")
+    public SuccessResDTO<GetMyPetInfoResListDTO> getMyPetInfo(@RequestHeader String userId,
+                                        @PathVariable String signatureCode) {
+        GetMyPetInfoResListDTO response = petService.getMyPetInfo(userId, signatureCode);
+        return new SuccessResDTO<GetMyPetInfoResListDTO>(response);
     }
 }

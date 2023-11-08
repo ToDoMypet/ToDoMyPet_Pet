@@ -3,10 +3,7 @@ package com.todomypet.petservice.service;
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.todomypet.petservice.domain.node.Pet;
 import com.todomypet.petservice.domain.relationship.Adopt;
-import com.todomypet.petservice.dto.AddPetReqDTO;
-import com.todomypet.petservice.dto.AdoptPetReqDTO;
-import com.todomypet.petservice.dto.AdoptedPetResDTO;
-import com.todomypet.petservice.dto.AdoptedPetResListDTO;
+import com.todomypet.petservice.dto.*;
 import com.todomypet.petservice.repository.AdoptRepository;
 import com.todomypet.petservice.repository.PetRepository;
 import jakarta.transaction.Transactional;
@@ -84,7 +81,26 @@ public class PetServiceImpl implements PetService {
                     .build();
             adoptedPetResDTOList.add(adoptedPetResDTO);
         }
-        AdoptedPetResListDTO response = AdoptedPetResListDTO.builder().petList(adoptedPetResDTOList).build();
-        return response;
+        return AdoptedPetResListDTO.builder().petList(adoptedPetResDTOList).build();
+    }
+
+    @Override
+    public GetMyPetInfoResListDTO getMyPetInfo(String userId, String signatureCode) {
+        List<Adopt> petInfos = adoptRepository.getMyPetInfo(userId, signatureCode);
+        List<GetMyPetInfoResDTO> getMyPetInfoResDTOList = new ArrayList<>();
+        for (Adopt adopt : petInfos) {
+            Pet pet = petRepository.getPetBySeqOfAdopt(adopt.getSeq());
+
+            GetMyPetInfoResDTO getMyPetInfoResDTO = GetMyPetInfoResDTO.builder()
+                    .portraitUrl(pet.getPortraitUrl())
+                    .name(adopt.getName())
+                    .maxExperience(pet.getMaxExperience())
+                    .experience(adopt.getExperience())
+                    .grade(pet.getGrade())
+                    .build();
+
+            getMyPetInfoResDTOList.add(getMyPetInfoResDTO);
+        }
+        return GetMyPetInfoResListDTO.builder().build();
     }
 }
