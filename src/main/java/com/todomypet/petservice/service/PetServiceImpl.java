@@ -104,4 +104,19 @@ public class PetServiceImpl implements PetService {
         }
         return GetMyPetInfoResListDTO.builder().build();
     }
+
+    @Override
+    @Transactional
+    public PetDetailResDTO getPetDetail(String userId, String seq) {
+        Adopt adopt = adoptRepository.getAdoptBySeq(userId, seq);
+        Pet pet = petRepository.getPetBySeqOfAdopt(seq);
+
+        return PetDetailResDTO.builder()
+                .grade(pet.getGrade())
+                .name(adopt.getName())
+                .type(pet.getType())
+                .personality(pet.getPersonality())
+                .description(pet.getPersonality())
+                .build();
+    }
 }

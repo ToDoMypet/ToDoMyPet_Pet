@@ -44,10 +44,17 @@ public class PetController {
     }
 
     @Operation(summary = "내 펫 정보", description = "일지에서 펫을 선택했을 때 불러오는 데이터입니다.")
-    @GetMapping("/my-pet-info/{signatureCode}")
+    @GetMapping("/adopted-pet-list/my-pet-info/{signatureCode}")
     public SuccessResDTO<GetMyPetInfoResListDTO> getMyPetInfo(@RequestHeader String userId,
                                         @PathVariable String signatureCode) {
         GetMyPetInfoResListDTO response = petService.getMyPetInfo(userId, signatureCode);
         return new SuccessResDTO<GetMyPetInfoResListDTO>(response);
+    }
+
+    @GetMapping("/adopted-pet-list/my-pet-info/detail/{seq}")
+    public SuccessResDTO<PetDetailResDTO> getMyPetDetail(@RequestHeader String userId,
+                                          @PathVariable String seq) {
+        PetDetailResDTO response = petService.getPetDetail(userId, seq);
+        return new SuccessResDTO<PetDetailResDTO>(response);
     }
 }

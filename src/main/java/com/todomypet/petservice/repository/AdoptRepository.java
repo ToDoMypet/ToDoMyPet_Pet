@@ -34,4 +34,7 @@ public interface AdoptRepository extends Neo4jRepository<Adopt, Long> {
             "MATCH (u)-[a:ADOPT]->(Pet) WHERE a.signatureCode = $signatureCode " +
             "RETURN a{.experience, .name, .seq, .graduated} ORDER BY a.seq")
     List<Adopt> getMyPetInfo(String userId, String signatureCode);
+
+    @Query("MATCH (u:User{id:")
+    Adopt getAdoptBySeq(String userId, String seq);
 }

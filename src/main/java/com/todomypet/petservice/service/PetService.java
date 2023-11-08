@@ -9,4 +9,5 @@ public interface PetService {
     void adoptPet(String userId, AdoptPetReqDTO adoptPetReqDTO);
     AdoptedPetResListDTO getAdoptedPetList(String userId);
     GetMyPetInfoResListDTO getMyPetInfo(String userId, String signatureCode);
+    PetDetailResDTO getPetDetail(String userId, String seq);
 }
