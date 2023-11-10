@@ -32,14 +32,14 @@ public class PetServiceImpl implements PetService {
     @Override
     public String addPet(AddPetReqDTO addPetReqDTO) {
         Pet p = Pet.builder().id(addPetReqDTO.getId())
-                    .name(addPetReqDTO.getName())
-                    .maxExperience(addPetReqDTO.getMaxExperience())
-                    .portraitUrl(addPetReqDTO.getPortraitUrl())
-                    .describe(addPetReqDTO.getDescribe())
-                    .personality(addPetReqDTO.getPersonality())
+                    .petName(addPetReqDTO.getName())
+                    .petMaxExperiencePoint(addPetReqDTO.getMaxExperience())
+                    .petPortraitUrl(addPetReqDTO.getPortraitUrl())
+                    .petDescribe(addPetReqDTO.getDescribe())
+                    .petPersonality(addPetReqDTO.getPersonality())
                     .petCondition(addPetReqDTO.getPetCondition())
-                    .type(addPetReqDTO.getType())
-                    .grade(addPetReqDTO.getGrade())
+                    .petType(addPetReqDTO.getType())
+                    .petGrade(addPetReqDTO.getGrade())
                     .build();
         return petRepository.save(p).getId();
     }
@@ -82,9 +82,9 @@ public class PetServiceImpl implements PetService {
             AdoptedPetResDTO adoptedPetResDTO = AdoptedPetResDTO.builder()
                     .name(adopt.getName())
                     .experience(adopt.getExperience())
-                    .portraitUrl(pet.getPortraitUrl())
-                    .grade(pet.getGrade())
-                    .maxExperience(pet.getMaxExperience())
+                    .portraitUrl(pet.getPetPortraitUrl())
+                    .grade(pet.getPetGrade())
+                    .maxExperience(pet.getPetMaxExperiencePoint())
                     .build();
             adoptedPetResDTOList.add(adoptedPetResDTO);
         }
@@ -94,16 +94,16 @@ public class PetServiceImpl implements PetService {
     @Override
     public GetMyPetInfoResListDTO getMyPetInfo(String userId, String signatureCode) {
         List<Adopt> petInfos = adoptRepository.getMyPetInfo(userId, signatureCode);
-        List<GetMyPetInfoResDTO> getMyPetInfoResDTOList = new ArrayList<>();
+        List<GetMyPetInfoResDTO> getMyPetInfoResDTOList = new ArrayList<GetMyPetInfoResDTO>();
         for (Adopt adopt : petInfos) {
             Pet pet = petRepository.getPetBySeqOfAdopt(adopt.getSeq());
 
             GetMyPetInfoResDTO getMyPetInfoResDTO = GetMyPetInfoResDTO.builder()
-                    .portraitUrl(pet.getPortraitUrl())
+                    .portraitUrl(pet.getPetPortraitUrl())
                     .name(adopt.getName())
-                    .maxExperience(pet.getMaxExperience())
+                    .maxExperience(pet.getPetMaxExperiencePoint())
                     .experience(adopt.getExperience())
-                    .grade(pet.getGrade())
+                    .grade(pet.getPetGrade())
                     .graduated(adopt.getGraduated())
                     .build();
 
@@ -119,11 +119,11 @@ public class PetServiceImpl implements PetService {
         Pet pet = petRepository.getPetBySeqOfAdopt(seq);
 
         return PetDetailResDTO.builder()
-                .grade(pet.getGrade())
+                .grade(pet.getPetGrade())
                 .name(adopt.getName())
-                .type(pet.getType())
-                .personality(pet.getPersonality())
-                .description(pet.getPersonality())
+                .type(pet.getPetType())
+                .personality(pet.getPetPersonality())
+                .description(pet.getPetDescribe())
                 .build();
     }
 
