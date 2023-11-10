@@ -8,6 +8,7 @@ import com.todomypet.petservice.exception.CustomException;
 import com.todomypet.petservice.exception.ErrorCode;
 import com.todomypet.petservice.repository.AdoptRepository;
 import com.todomypet.petservice.repository.PetRepository;
+import com.todomypet.petservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class PetServiceImpl implements PetService {
 
     private final PetRepository petRepository;
     private final AdoptRepository adoptRepository;
+    private final UserRepository userRepository;
 
 
     @Transactional
@@ -63,6 +65,9 @@ public class PetServiceImpl implements PetService {
                 break;
             }
         }
+
+        userRepository.increasePetCount(userId);
+
 
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, adoptPetReqDTO.getPetId(),
                 adoptPetReqDTO.getRename(), adoptAt, UlidCreator.getUlid().toString(), signatureCode.toString());

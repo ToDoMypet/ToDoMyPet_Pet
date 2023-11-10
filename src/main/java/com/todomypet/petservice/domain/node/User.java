@@ -39,7 +39,7 @@ public class User {
     @Property("personalCode")
     private String personalCode;
 
-    @Property("petCount")
+    @Property("petAcquireCount")
     private Integer petAcquireCount;
 
     @Property("petEvolveCount")
