@@ -19,13 +19,8 @@ public class Pet {
     @Property("petType")
     private PetType petType;
 
-<<<<<<< HEAD
-    @Property("maxExperiencePoint")
-    private int maxExperiencePoint;
-=======
     @Property("petMaxExperiencePoint")
     private int petMaxExperiencePoint;
->>>>>>> d6e51293052926cf486a4ee3539198148e5ecb09
 
     @Property("petGrade")
     private PetGradeType petGrade;
