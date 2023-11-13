@@ -10,6 +10,6 @@ public class AdoptedPetResDTO {
     private String name;
     private String portraitUrl;
     private PetGradeType grade;
-    private int experience;
-    private int maxExperience;
+    private int experiencePoint;
+    private int maxExperiencePoint;
 }

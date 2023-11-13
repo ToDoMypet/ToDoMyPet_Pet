@@ -76,10 +76,10 @@ public class PetServiceImpl implements PetService {
             Pet pet = petRepository.getPetBySeqOfAdopt(adopt.getSeq());
             AdoptedPetResDTO adoptedPetResDTO = AdoptedPetResDTO.builder()
                     .name(adopt.getName())
-                    .experience(adopt.getExperience())
+                    .experiencePoint(adopt.getExperiencePoint())
                     .portraitUrl(pet.getPortraitUrl())
                     .grade(pet.getGrade())
-                    .maxExperience(pet.getMaxExperience())
+                    .maxExperiencePoint(pet.getMaxExperience())
                     .build();
             adoptedPetResDTOList.add(adoptedPetResDTO);
         }

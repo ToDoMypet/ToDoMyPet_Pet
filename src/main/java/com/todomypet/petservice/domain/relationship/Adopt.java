@@ -33,8 +33,8 @@ public class Adopt {
     @Property("graduated")
     private Boolean graduated;
 
-    @Property("experience")
-    private int experience;
+    @Property("experiencePoint")
+    private int experiencePoint;
 
     @Property("signatureCode")
     private String signatureCode;
