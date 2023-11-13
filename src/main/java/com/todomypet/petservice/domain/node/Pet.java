@@ -13,26 +13,31 @@ public class Pet {
     @Id
     private String id;
 
-    @Property("name")
-    private String name;
+    @Property("petName")
+    private String petName;
 
-    @Property("type")
-    private PetType type;
+    @Property("petType")
+    private PetType petType;
 
+<<<<<<< HEAD
     @Property("maxExperiencePoint")
     private int maxExperiencePoint;
+=======
+    @Property("petMaxExperiencePoint")
+    private int petMaxExperiencePoint;
+>>>>>>> d6e51293052926cf486a4ee3539198148e5ecb09
 
-    @Property("grade")
-    private PetGradeType grade;
+    @Property("petGrade")
+    private PetGradeType petGrade;
 
-    @Property("portraitUrl")
-    private String portraitUrl;
+    @Property("petPortraitUrl")
+    private String petPortraitUrl;
 
-    @Property("describe")
-    private String describe;
+    @Property("petDescribe")
+    private String petDescribe;
 
-    @Property("personality")
-    private String personality;
+    @Property("petPersonality")
+    private String petPersonality;
 
     @Property("petCondition")
     private int petCondition;

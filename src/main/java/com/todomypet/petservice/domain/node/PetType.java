@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum PetType {
-    BREAD("빵");
+    BREAD("빵"),
+    GHOST("유령");
     ;
 
     private final String petType;

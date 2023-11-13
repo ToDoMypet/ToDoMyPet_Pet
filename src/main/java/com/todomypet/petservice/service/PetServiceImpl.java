@@ -8,6 +8,7 @@ import com.todomypet.petservice.exception.CustomException;
 import com.todomypet.petservice.exception.ErrorCode;
 import com.todomypet.petservice.repository.AdoptRepository;
 import com.todomypet.petservice.repository.PetRepository;
+import com.todomypet.petservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,20 +25,21 @@ public class PetServiceImpl implements PetService {
 
     private final PetRepository petRepository;
     private final AdoptRepository adoptRepository;
+    private final UserRepository userRepository;
 
 
     @Transactional
     @Override
     public String addPet(AddPetReqDTO addPetReqDTO) {
         Pet p = Pet.builder().id(addPetReqDTO.getId())
-                    .name(addPetReqDTO.getName())
-                    .maxExperience(addPetReqDTO.getMaxExperience())
-                    .portraitUrl(addPetReqDTO.getPortraitUrl())
-                    .describe(addPetReqDTO.getDescribe())
-                    .personality(addPetReqDTO.getPersonality())
+                    .petName(addPetReqDTO.getName())
+                    .petMaxExperiencePoint(addPetReqDTO.getMaxExperience())
+                    .petPortraitUrl(addPetReqDTO.getPortraitUrl())
+                    .petDescribe(addPetReqDTO.getDescribe())
+                    .petPersonality(addPetReqDTO.getPersonality())
                     .petCondition(addPetReqDTO.getPetCondition())
-                    .type(addPetReqDTO.getType())
-                    .grade(addPetReqDTO.getGrade())
+                    .petType(addPetReqDTO.getType())
+                    .petGrade(addPetReqDTO.getGrade())
                     .build();
         return petRepository.save(p).getId();
     }
@@ -64,6 +66,9 @@ public class PetServiceImpl implements PetService {
             }
         }
 
+        userRepository.increasePetCount(userId);
+
+
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, adoptPetReqDTO.getPetId(),
                 adoptPetReqDTO.getRename(), adoptAt, UlidCreator.getUlid().toString(), signatureCode.toString());
     }
@@ -77,9 +82,9 @@ public class PetServiceImpl implements PetService {
             AdoptedPetResDTO adoptedPetResDTO = AdoptedPetResDTO.builder()
                     .name(adopt.getName())
                     .experiencePoint(adopt.getExperiencePoint())
-                    .portraitUrl(pet.getPortraitUrl())
-                    .grade(pet.getGrade())
-                    .maxExperiencePoint(pet.getMaxExperience())
+                    .portraitUrl(pet.getPetPortraitUrl())
+                    .grade(pet.getPetGrade())
+                    .maxExperiencePoint(pet.getPetMaxExperiencePoint())
                     .build();
             adoptedPetResDTOList.add(adoptedPetResDTO);
         }
@@ -89,16 +94,16 @@ public class PetServiceImpl implements PetService {
     @Override
     public GetMyPetInfoResListDTO getMyPetInfo(String userId, String signatureCode) {
         List<Adopt> petInfos = adoptRepository.getMyPetInfo(userId, signatureCode);
-        List<GetMyPetInfoResDTO> getMyPetInfoResDTOList = new ArrayList<>();
+        List<GetMyPetInfoResDTO> getMyPetInfoResDTOList = new ArrayList<GetMyPetInfoResDTO>();
         for (Adopt adopt : petInfos) {
             Pet pet = petRepository.getPetBySeqOfAdopt(adopt.getSeq());
 
             GetMyPetInfoResDTO getMyPetInfoResDTO = GetMyPetInfoResDTO.builder()
-                    .portraitUrl(pet.getPortraitUrl())
+                    .portraitUrl(pet.getPetPortraitUrl())
                     .name(adopt.getName())
-                    .maxExperience(pet.getMaxExperience())
-                    .experience(adopt.getExperience())
-                    .grade(pet.getGrade())
+                    .maxExperience(pet.getPetMaxExperiencePoint())
+                    .experience(adopt.getExperiencePoint())
+                    .grade(pet.getPetGrade())
                     .graduated(adopt.getGraduated())
                     .build();
 
@@ -114,11 +119,11 @@ public class PetServiceImpl implements PetService {
         Pet pet = petRepository.getPetBySeqOfAdopt(seq);
 
         return PetDetailResDTO.builder()
-                .grade(pet.getGrade())
+                .grade(pet.getPetGrade())
                 .name(adopt.getName())
-                .type(pet.getType())
-                .personality(pet.getPersonality())
-                .description(pet.getPersonality())
+                .type(pet.getPetType())
+                .personality(pet.getPetPersonality())
+                .description(pet.getPetDescribe())
                 .build();
     }
 
