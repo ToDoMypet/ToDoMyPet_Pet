@@ -150,6 +150,7 @@ public class PetServiceImpl implements PetService {
                         .portraitUrl(petList.get(j).getPetPortraitUrl())
                         .collected(adoptRepository.existsAdoptByUserIdAndPetId(userId, petList.get(j).getId()))
                         .build();
+                getPetCollectionResList.add(getPetCollectionResDTO);
             }
             switch (i) {
                 case 0 -> {
