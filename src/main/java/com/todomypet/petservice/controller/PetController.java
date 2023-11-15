@@ -49,7 +49,7 @@ public class PetController {
         return new SuccessResDTO<GetMyPetInfoResListDTO>(response);
     }
 
-    @Operation(summary = "내 펫 정보 자세히 보기", description = "특정 펫의 성장 과정 데이터를 return합니다.")
+    @Operation(summary = "내 펫 정보 자세히 보기", description = "특정 펫의 데이터를 return합니다.")
     @GetMapping("/adopted-pet-list/my-pet-info/detail/{seq}")
     public SuccessResDTO<PetDetailResDTO> getMyPetDetail(@RequestHeader String userId,
                                           @PathVariable String seq) {

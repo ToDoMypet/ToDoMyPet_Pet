@@ -125,6 +125,7 @@ public class PetServiceImpl implements PetService {
                 .type(pet.getPetType())
                 .personality(pet.getPetPersonality())
                 .description(pet.getPetDescribe())
+                .portraitUrl(pet.getPetPortraitUrl())
                 .build();
     }
 
