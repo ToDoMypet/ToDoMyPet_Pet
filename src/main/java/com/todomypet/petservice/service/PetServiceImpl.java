@@ -2,6 +2,7 @@ package com.todomypet.petservice.service;
 
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.todomypet.petservice.domain.node.Pet;
+import com.todomypet.petservice.domain.node.PetType;
 import com.todomypet.petservice.domain.relationship.Adopt;
 import com.todomypet.petservice.dto.*;
 import com.todomypet.petservice.exception.CustomException;
@@ -132,5 +133,33 @@ public class PetServiceImpl implements PetService {
         Adopt adopt = adoptRepository.getOneAdoptByUserIdAndSignatureCode(userId, renamePetReqDTO.getSignatureCode())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_COLLECT_USER_AND_SIGNATURE_CODE));
         adoptRepository.renamePet(userId, renamePetReqDTO.getSignatureCode(), renamePetReqDTO.getRename());
+    }
+
+    @Override
+    public GetPetCollectionListResDTO getPetCollection(String userId) {
+        PetType[] petTypeList = {PetType.BREAD, PetType.GHOST};
+        GetPetCollectionListResDTO getPetCollectionListResDTO = new GetPetCollectionListResDTO();
+
+        for (int i = 0; i < petTypeList.length; i++) {
+            List<Pet> petList = petRepository.getPetList(petTypeList[i]);
+            List<GetPetCollectionResDTO> getPetCollectionResList = new ArrayList<>();
+            for (int j = 0; j < petList.size(); j++) {
+                GetPetCollectionResDTO getPetCollectionResDTO = GetPetCollectionResDTO.builder()
+                        .id(petList.get(j).getId())
+                        .petName(petList.get(j).getPetName())
+                        .portraitUrl(petList.get(j).getPetPortraitUrl())
+                        .collected(adoptRepository.existsAdoptByUserIdAndPetId(userId, petList.get(j).getId()))
+                        .build();
+            }
+            switch (i) {
+                case 0 -> {
+                    getPetCollectionListResDTO.setBread(getPetCollectionResList);
+                }
+                case 1 -> {
+                    getPetCollectionListResDTO.setGhost(getPetCollectionResList);
+                }
+            }
+        }
+        return getPetCollectionListResDTO;
     }
 }

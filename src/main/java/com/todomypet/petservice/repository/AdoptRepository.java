@@ -46,4 +46,8 @@ public interface AdoptRepository extends Neo4jRepository<Adopt, Long> {
     @Query("MATCH (u:User{id:$userId}) WITH u " +
             "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE a.signatureCode = $signatureCode")
     Optional<Adopt> getOneAdoptByUserIdAndSignatureCode(String userId, String signatureCode);
+
+    @Query("MATCH (u:User{id:$userId}) WITH u " +
+            "MATCH (p:Pet{id:$petId}) RETURN EXISTS((u)-[:ADOPT]->(p))")
+    boolean existsAdoptByUserIdAndPetId(String userId, String petId);
 }
