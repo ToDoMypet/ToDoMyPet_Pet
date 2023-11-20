@@ -65,6 +65,7 @@ public class PetController {
         return new SuccessResDTO<Void>(null);
     }
 
+    @Operation(summary = "도감 조회", description = "펫 도감을 조회합니다.")
     @GetMapping("/collection")
     public SuccessResDTO<GetPetCollectionListResDTO> getPetCollection(@RequestHeader String userId) {
         GetPetCollectionListResDTO response = petService.getPetCollection(userId);
