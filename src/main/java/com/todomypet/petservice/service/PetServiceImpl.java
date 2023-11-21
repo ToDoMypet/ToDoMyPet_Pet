@@ -2,6 +2,7 @@ package com.todomypet.petservice.service;
 
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.todomypet.petservice.domain.node.Pet;
+import com.todomypet.petservice.domain.node.PetPersonalityType;
 import com.todomypet.petservice.domain.node.PetType;
 import com.todomypet.petservice.domain.relationship.Adopt;
 import com.todomypet.petservice.dto.*;
@@ -37,7 +38,7 @@ public class PetServiceImpl implements PetService {
                     .petMaxExperiencePoint(addPetReqDTO.getMaxExperience())
                     .petPortraitUrl(addPetReqDTO.getPortraitUrl())
                     .petDescribe(addPetReqDTO.getDescribe())
-                    .petPersonality(addPetReqDTO.getPersonality())
+                    .petPersonality(PetPersonalityType.valueOf(addPetReqDTO.getPersonality()))
                     .petCondition(addPetReqDTO.getPetCondition())
                     .petType(addPetReqDTO.getType())
                     .petGrade(addPetReqDTO.getGrade())
@@ -145,11 +146,15 @@ public class PetServiceImpl implements PetService {
             List<Pet> petList = petRepository.getPetList(petTypeList[i]);
             List<GetPetCollectionResDTO> getPetCollectionResList = new ArrayList<>();
             for (int j = 0; j < petList.size(); j++) {
+                Pet pet = petList.get(j);
                 GetPetCollectionResDTO getPetCollectionResDTO = GetPetCollectionResDTO.builder()
-                        .id(petList.get(j).getId())
-                        .petName(petList.get(j).getPetName())
-                        .portraitUrl(petList.get(j).getPetPortraitUrl())
-                        .collected(adoptRepository.existsAdoptByUserIdAndPetId(userId, petList.get(j).getId()))
+                        .id(pet.getId())
+                        .petName(pet.getPetName())
+                        .portraitUrl(pet.getPetPortraitUrl())
+                        .collected(adoptRepository.existsAdoptByUserIdAndPetId(userId, pet.getId()))
+                        .describe(pet.getPetDescribe())
+                        .personality(pet.getPetPersonality())
+                        .grade(pet.getPetGrade())
                         .build();
                 getPetCollectionResList.add(getPetCollectionResDTO);
             }

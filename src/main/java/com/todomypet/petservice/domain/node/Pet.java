@@ -32,7 +32,7 @@ public class Pet {
     private String petDescribe;
 
     @Property("petPersonality")
-    private String petPersonality;
+    private PetPersonalityType petPersonality;
 
     @Property("petCondition")
     private int petCondition;
