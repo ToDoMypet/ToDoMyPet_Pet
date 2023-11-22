@@ -12,4 +12,5 @@ public class AdoptedPetResDTO {
     private PetGradeType grade;
     private int experiencePoint;
     private int maxExperiencePoint;
+    private String signatureCode;
 }

@@ -87,6 +87,7 @@ public class PetServiceImpl implements PetService {
                     .portraitUrl(pet.getPetPortraitUrl())
                     .grade(pet.getPetGrade())
                     .maxExperiencePoint(pet.getPetMaxExperiencePoint())
+                    .signatureCode(adopt.getSignatureCode())
                     .build();
             adoptedPetResDTOList.add(adoptedPetResDTO);
         }

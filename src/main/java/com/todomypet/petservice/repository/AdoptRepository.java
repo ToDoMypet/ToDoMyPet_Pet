@@ -17,26 +17,26 @@ public interface AdoptRepository extends Neo4jRepository<Adopt, Long> {
     @Query("MATCH (u:User{id:$userId}) WITH u " +
             "MATCH (p:Pet{id:$petId}) " +
             "CREATE (u)-[:ADOPT{name:$rename, startedAt:$adoptAt, " +
-            "seq: $seq, graduated: false, experience: 0, signatureCode: $signatureCode}]->(p)")
+            "seq: $seq, graduated: false, experiencePoint: 0, signatureCode: $signatureCode}]->(p)")
     void createAdoptBetweenAdoptAndUser(String userId, String petId, String rename, LocalDateTime adoptAt,
                                         String seq, String signatureCode);
 
     @Query("MATCH (u:User{id:$userId}) WITH u " +
             "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE (p.grade = 'ADULT' AND a.graduated = true) OR (a.graduated = false) " +
-            "RETURN a{.seq, .name, .graduated, .experience} ORDER BY a.seq DESC")
+            "RETURN a{.seq, .name, .graduated, .experiencePoint, .signatureCode} ORDER BY a.seq DESC")
     List<Adopt> getAdoptList(String userId);
 
     @Query("MATCH (User)-[a:ADOPT]->(Pet) " +
             "WHERE a.signatureCode = $signatureCode RETURN a")
     Optional<Adopt> getOneAdoptBySignatureCode(String signatureCode);
 
-    @Query("MATCH (u:User:{id:$userId}) WITH u " +
+    @Query("MATCH (u:User{id:$userId}) WITH u " +
             "MATCH (u)-[a:ADOPT]->(Pet) WHERE a.signatureCode = $signatureCode " +
-            "RETURN a{.experience, .name, .seq, .graduated} ORDER BY a.seq")
+            "RETURN a{.experiencePoint, .name, .seq, .graduated} ORDER BY a.seq")
     List<Adopt> getMyPetInfo(String userId, String signatureCode);
 
     @Query("MATCH (u:User{id:$userId}) WITH u " +
-            "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE a.seq = $seq")
+            "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE a.seq = $seq RETURN a{.seq, .name, .graduated, .experiencePoint, .signatureCode}")
     Adopt getAdoptBySeq(String userId, String seq);
 
     @Query("MATCH (u:User{id:$userId}) WITH u " +
@@ -44,7 +44,7 @@ public interface AdoptRepository extends Neo4jRepository<Adopt, Long> {
     void renamePet(String userId, String signatureCode, String rename);
 
     @Query("MATCH (u:User{id:$userId}) WITH u " +
-            "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE a.signatureCode = $signatureCode")
+            "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE a.signatureCode = $signatureCode RETURN a")
     Optional<Adopt> getOneAdoptByUserIdAndSignatureCode(String userId, String signatureCode);
 
     @Query("MATCH (u:User{id:$userId}) WITH u " +
