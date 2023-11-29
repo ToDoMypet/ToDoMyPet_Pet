@@ -4,4 +4,5 @@ import com.todomypet.petservice.dto.AddBackgroundReqDTO;
 
 public interface BackgroundService {
     void addBackground(AddBackgroundReqDTO addBackgroundReqDTO);
+    String getBackgroundUrlById(String backgroundId);
 }

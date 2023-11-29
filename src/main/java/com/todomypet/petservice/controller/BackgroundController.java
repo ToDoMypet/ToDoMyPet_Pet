@@ -8,9 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -22,11 +20,18 @@ public class BackgroundController {
     private final BackgroundService backgroundService;
 
     // todo: 권한 설정 필요
-    @PostMapping("/background/add")
     @Operation(summary = "배경 추가", description = "어드민 전용 API입니다.")
+    @PostMapping("/background/add")
     public SuccessResDTO<Void> addBackground(@RequestBody AddBackgroundReqDTO addBackgroundReqDTO) {
         backgroundService.addBackground(addBackgroundReqDTO);
         return new SuccessResDTO<>(null);
+    }
+
+    @Operation(hidden = true)
+    @GetMapping("/background/{backgroundId}")
+    public SuccessResDTO<String> getBackgroundUrl(@PathVariable String backgroundId) {
+        String response = backgroundService.getBackgroundUrlById(backgroundId);
+        return new SuccessResDTO<>(response);
     }
 
 }

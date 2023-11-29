@@ -19,4 +19,9 @@ public class BackgroundServiceImpl implements BackgroundService {
                 .build();
         backgroundRepository.save(background);
     }
+
+    @Override
+    public String getBackgroundUrlById(String backgroundId) {
+        return backgroundRepository.getBackgroundUrlById(backgroundId);
+    }
 }
