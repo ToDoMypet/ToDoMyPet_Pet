@@ -74,6 +74,7 @@ public class PetController {
         return new SuccessResDTO<GetPetCollectionListResDTO>(response);
     }
 
+    @Operation(summary = "게시글 작성 시 펫 리스트 조회", description = "게시글 작성 시 펫을 선택하는 리스트를 조회합니다.")
     @GetMapping("/community-pet-list")
     public SuccessResDTO<List<CommunityPetListResDTO>> getCommunityPetList(@RequestHeader String userId) {
         List<CommunityPetListResDTO> response = petService.getCommunityPetList(userId);

@@ -37,6 +37,7 @@ public class BackgroundController {
         return new SuccessResDTO<>(response);
     }
 
+    @Operation(summary = "펫룸 리스트 조회", description = "펫룸 리스트를 조회합니다.")
     @GetMapping("/background")
     public SuccessResDTO<List<BackgroundResDTO>> getBackgroundList(@RequestHeader String userId) {
         List<BackgroundResDTO> response = backgroundService.getBackgroundList();
