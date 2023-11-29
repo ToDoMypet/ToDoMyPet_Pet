@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -70,5 +72,11 @@ public class PetController {
     public SuccessResDTO<GetPetCollectionListResDTO> getPetCollection(@RequestHeader String userId) {
         GetPetCollectionListResDTO response = petService.getPetCollection(userId);
         return new SuccessResDTO<GetPetCollectionListResDTO>(response);
+    }
+
+    @GetMapping("/community-pet-list")
+    public SuccessResDTO<List<CommunityPetListResDTO>> getCommunityPetList(@RequestHeader String userId) {
+        List<CommunityPetListResDTO> response = petService.getCommunityPetList(userId);
+        return new SuccessResDTO<List<CommunityPetListResDTO>>(response);
     }
 }

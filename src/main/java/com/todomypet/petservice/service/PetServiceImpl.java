@@ -170,4 +170,19 @@ public class PetServiceImpl implements PetService {
         }
         return getPetCollectionListResDTO;
     }
+
+    @Override
+    @Transactional
+    public List<CommunityPetListResDTO> getCommunityPetList(String userId) {
+        List<Adopt> adoptList = adoptRepository.getCommunityPetList(userId);
+        List<CommunityPetListResDTO> communityPetListResDTOList = new ArrayList<>();
+        for (Adopt adopt : adoptList) {
+            communityPetListResDTOList.add(CommunityPetListResDTO.builder()
+                    .id(adopt.getSeq())
+                    .petName(adopt.getName())
+                    .petImageUrl(petRepository.getPetBySeqOfAdopt(adopt.getSeq()).getPetPortraitUrl()).build());
+
+        }
+        return communityPetListResDTOList;
+    }
 }
