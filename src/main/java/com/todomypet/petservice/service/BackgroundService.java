@@ -10,4 +10,6 @@ public interface BackgroundService {
     String getBackgroundUrlById(String backgroundId);
 
     List<BackgroundResDTO> getBackgroundList();
+
+    void changeBackground(String userId, String backgroundId);
 }

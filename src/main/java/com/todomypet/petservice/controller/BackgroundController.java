@@ -44,4 +44,11 @@ public class BackgroundController {
         return new SuccessResDTO<List<BackgroundResDTO>>(response);
     }
 
+    @Operation(summary = "펫룸 변경", description = "펫룸을 변경합니다.")
+    @PutMapping("/background/{backgroundId}")
+    public SuccessResDTO<Void> changeMainBackground(@RequestHeader String userId, @PathVariable String backgroundId) {
+        backgroundService.changeBackground(userId, backgroundId);
+        return new SuccessResDTO<>(null);
+    }
+
 }

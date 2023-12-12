@@ -3,8 +3,11 @@ package com.todomypet.petservice.service;
 import com.todomypet.petservice.domain.node.Background;
 import com.todomypet.petservice.dto.AddBackgroundReqDTO;
 import com.todomypet.petservice.dto.BackgroundResDTO;
+import com.todomypet.petservice.exception.CustomException;
+import com.todomypet.petservice.exception.ErrorCode;
 import com.todomypet.petservice.mapper.BackgroundMapper;
 import com.todomypet.petservice.repository.BackgroundRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +42,14 @@ public class BackgroundServiceImpl implements BackgroundService {
             backgroundResDTOList.add(backgroundMapper.backgroundToBackgroundResDTO(background));
         }
         return backgroundResDTOList;
+    }
+
+    @Override
+    @Transactional
+    public void changeBackground(String userId, String backgroundId) {
+        Background b = backgroundRepository.getBackgroundById(backgroundId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_BACKGROUND));
+        backgroundRepository.deleteBackground(userId);
+        backgroundRepository.changeBackground(userId, backgroundId);
     }
 }
