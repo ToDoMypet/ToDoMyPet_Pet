@@ -13,6 +13,7 @@ import com.todomypet.petservice.repository.PetRepository;
 import com.todomypet.petservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PetServiceImpl implements PetService {
 
     private final PetRepository petRepository;
@@ -184,5 +186,29 @@ public class PetServiceImpl implements PetService {
 
         }
         return communityPetListResDTOList;
+    }
+
+    @Override
+    @Transactional
+    public UpdateExperiencePointResDTO updateExperiencePoint(String userId,
+                                                             UpdateExperiencePointReqDTO updateExperiencePointReqDTO) {
+        log.info(">>> 경험치 획득 진입: (유저)" + userId + "/ (펫 seqId)" +
+                updateExperiencePointReqDTO.getPetSeqId() + " (기존 경험치)" + adoptRepository.getExperiencePointBySeqId(userId,
+                updateExperiencePointReqDTO.getPetSeqId()));
+        if (adoptRepository.getAdoptBySeq(userId, updateExperiencePointReqDTO.getPetSeqId()) == null) {
+            throw new CustomException(ErrorCode.NOT_EXSISTS_ADOPT_RELATIONSHIP);
+        };
+
+        adoptRepository.updateExperiencePoint(userId, updateExperiencePointReqDTO.getPetSeqId(),
+                updateExperiencePointReqDTO.getExperiencePoint());
+
+        int updatedExp = adoptRepository.getExperiencePointBySeqId(userId,
+                updateExperiencePointReqDTO.getPetSeqId());
+
+        log.info(">>> 경험치 획득 완료: (유저)" + userId + "/ (펫 seqId)" +
+                updateExperiencePointReqDTO.getPetSeqId() + " (갱신 경험치)" + adoptRepository.getExperiencePointBySeqId(userId,
+                updateExperiencePointReqDTO.getPetSeqId()));
+
+        return UpdateExperiencePointResDTO.builder().updatedExperiencePoint(updatedExp).build();
     }
 }

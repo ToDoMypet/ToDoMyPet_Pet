@@ -13,4 +13,5 @@ public interface PetService {
     void renamePet(String userId, RenamePetReqDTO renamePetReqDTO);
     GetPetCollectionListResDTO getPetCollection(String userId);
     List<CommunityPetListResDTO> getCommunityPetList(String userId);
+    UpdateExperiencePointResDTO updateExperiencePoint(String userId, UpdateExperiencePointReqDTO updateExperiencePointReqDTO);
 }

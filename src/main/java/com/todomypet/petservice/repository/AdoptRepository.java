@@ -55,4 +55,14 @@ public interface AdoptRepository extends Neo4jRepository<Adopt, Long> {
             "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE (p.grade = 'ADULT' AND a.graduated = true) OR (a.graduated = false) " +
             "RETURN a{.seq, .name, .graduated, .experiencePoint, .signatureCode} ORDER BY a.seq DESC")
     List<Adopt> getCommunityPetList(String userId);
+
+    @Query("MATCH (u:User{id:$userId}) WITH u " +
+            "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE a.seq = $petSeqId " +
+            "SET a.experiencePoint = a.experiencePoint + $experiencePoint")
+    void updateExperiencePoint(String userId, String petSeqId, int experiencePoint);
+
+    @Query("MATCH (u:User{id:$userId}) WITH u " +
+            "MATCH (u)-[a:ADOPT]->(p:Pet) WHERE a.seq = $petSeqId " +
+            "RETURN a.experiencePoint")
+    int getExperiencePointBySeqId(String userId, String petSeqId);
 }

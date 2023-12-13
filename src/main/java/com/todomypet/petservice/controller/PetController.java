@@ -80,4 +80,12 @@ public class PetController {
         List<CommunityPetListResDTO> response = petService.getCommunityPetList(userId);
         return new SuccessResDTO<List<CommunityPetListResDTO>>(response);
     }
+
+    @Operation(summary = "펫 경험치 획득", description = "현재 키우고 있는 펫의 경험치를 획득합니다.")
+    @PutMapping("/update-exp")
+    public SuccessResDTO<UpdateExperiencePointResDTO> updateExperiencePoint(@RequestHeader String userId,
+                                                                            @RequestBody UpdateExperiencePointReqDTO req) {
+        UpdateExperiencePointResDTO response = petService.updateExperiencePoint(userId, req);
+        return new SuccessResDTO<UpdateExperiencePointResDTO>(response);
+    }
 }
