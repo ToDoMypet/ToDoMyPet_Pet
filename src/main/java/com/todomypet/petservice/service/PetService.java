@@ -14,4 +14,5 @@ public interface PetService {
     GetPetCollectionListResDTO getPetCollection(String userId);
     List<CommunityPetListResDTO> getCommunityPetList(String userId);
     UpdateExperiencePointResDTO updateExperiencePoint(String userId, UpdateExperiencePointReqDTO updateExperiencePointReqDTO);
+    String getMainPetByUserId(String userId);
 }

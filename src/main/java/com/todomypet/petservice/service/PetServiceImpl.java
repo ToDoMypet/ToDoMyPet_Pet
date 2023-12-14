@@ -196,7 +196,7 @@ public class PetServiceImpl implements PetService {
                 updateExperiencePointReqDTO.getPetSeqId() + " (기존 경험치)" + adoptRepository.getExperiencePointBySeqId(userId,
                 updateExperiencePointReqDTO.getPetSeqId()));
         if (adoptRepository.getAdoptBySeq(userId, updateExperiencePointReqDTO.getPetSeqId()) == null) {
-            throw new CustomException(ErrorCode.NOT_EXSISTS_ADOPT_RELATIONSHIP);
+            throw new CustomException(ErrorCode.NOT_EXISTS_ADOPT_RELATIONSHIP);
         };
 
         adoptRepository.updateExperiencePoint(userId, updateExperiencePointReqDTO.getPetSeqId(),
@@ -210,5 +210,13 @@ public class PetServiceImpl implements PetService {
                 updateExperiencePointReqDTO.getPetSeqId()));
 
         return UpdateExperiencePointResDTO.builder().updatedExperiencePoint(updatedExp).build();
+    }
+
+    @Override
+    public String getMainPetByUserId(String userId) {
+        log.info(">>> 서버간 통신 수신: 메인 펫 조회: " + userId);
+        Adopt adopt = adoptRepository.getMainPetByUserId(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_MAIN_PET));
+        return adopt.getSeq();
     }
 }

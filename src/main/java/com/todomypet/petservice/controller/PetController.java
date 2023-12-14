@@ -88,4 +88,10 @@ public class PetController {
         UpdateExperiencePointResDTO response = petService.updateExperiencePoint(userId, req);
         return new SuccessResDTO<UpdateExperiencePointResDTO>(response);
     }
+
+    @GetMapping("/main-pet")
+    public SuccessResDTO<String> getMainPet(@RequestHeader String userId) {
+        String response = petService.getMainPetByUserId(userId);
+        return new SuccessResDTO<>(response);
+    }
 }
