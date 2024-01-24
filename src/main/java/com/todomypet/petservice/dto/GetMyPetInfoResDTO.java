@@ -7,10 +7,11 @@ import lombok.Getter;
 @Builder
 @Getter
 public class GetMyPetInfoResDTO {
-    private String portraitUrl;
+    private String imageUrl;
     private String name;
     private int maxExperience;
     private int experience;
     private PetGradeType grade;
     private boolean graduated;
+    private String seq;
 }

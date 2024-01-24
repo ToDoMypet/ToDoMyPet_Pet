@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class AdoptedPetResDTO {
     private String name;
-    private String portraitUrl;
+    private String imageUrl;
     private PetGradeType grade;
     private int experiencePoint;
     private int maxExperiencePoint;

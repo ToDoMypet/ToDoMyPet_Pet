@@ -7,5 +7,6 @@ import lombok.Getter;
 @Builder
 public class AdoptPetReqDTO {
     private String petId;
-    private String rename;
+    private String name;
+    private boolean renameOrNot;
 }

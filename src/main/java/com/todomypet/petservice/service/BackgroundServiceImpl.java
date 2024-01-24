@@ -1,8 +1,9 @@
 package com.todomypet.petservice.service;
 
 import com.todomypet.petservice.domain.node.Background;
-import com.todomypet.petservice.dto.AddBackgroundReqDTO;
+import com.todomypet.petservice.dto.background.AddBackgroundReqDTO;
 import com.todomypet.petservice.dto.BackgroundResDTO;
+import com.todomypet.petservice.dto.background.AddBackgroundReqDTOList;
 import com.todomypet.petservice.exception.CustomException;
 import com.todomypet.petservice.exception.ErrorCode;
 import com.todomypet.petservice.mapper.BackgroundMapper;
@@ -22,11 +23,13 @@ public class BackgroundServiceImpl implements BackgroundService {
     private final BackgroundMapper backgroundMapper;
 
     @Override
-    public void addBackground(AddBackgroundReqDTO addBackgroundReqDTO) {
-        Background background = Background.builder().id(addBackgroundReqDTO.getId())
-                .backgroundImageUrl(addBackgroundReqDTO.getBackgroundImageUrl())
-                .build();
-        backgroundRepository.save(background);
+    public void addBackground(AddBackgroundReqDTOList req) {
+        for (AddBackgroundReqDTO addBackgroundReqDTO : req.getBackgroundList()) {
+            Background background = Background.builder().id(addBackgroundReqDTO.getId())
+                    .backgroundImageUrl(addBackgroundReqDTO.getBackgroundImageUrl())
+                    .build();
+            backgroundRepository.save(background);
+        }
     }
 
     @Override

@@ -10,7 +10,7 @@ import lombok.Getter;
 public class GetPetCollectionResDTO {
     private String id;
     private String petName;
-    private String portraitUrl;
+    private String imageUrl;
     private boolean collected;
     private PetPersonalityType personality;
     private PetGradeType grade;

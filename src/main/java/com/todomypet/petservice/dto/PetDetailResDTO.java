@@ -14,5 +14,5 @@ public class PetDetailResDTO {
     private PetType type;
     private PetPersonalityType personality;
     private String description;
-    private String portraitUrl;
+    private String imageUrl;
 }

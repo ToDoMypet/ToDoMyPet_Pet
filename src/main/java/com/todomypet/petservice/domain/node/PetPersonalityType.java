@@ -8,7 +8,7 @@ public enum PetPersonalityType {
     CHEERFUL("명랑"),
     GLUTTON("먹보"),
     PROTEIN("프로틴"),
-    CUTE("귀여움")
+    PURE_EVIL("순수악")
     ;
 
     private final String PetPersonalityType;

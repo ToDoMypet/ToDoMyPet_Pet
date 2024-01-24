@@ -1,10 +1,13 @@
 package com.todomypet.petservice.controller;
 
 import com.todomypet.petservice.dto.*;
+import com.todomypet.petservice.dto.pet.*;
 import com.todomypet.petservice.service.PetService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +26,9 @@ public class PetController {
     // todo: 권한 설정 필요
     @Operation(summary = "펫 추가", description = "펫을 추가합니다. admin 전용 API입니다.")
     @PostMapping("/add")
-    public SuccessResDTO<AddPetResDTO> addPet(@RequestBody AddPetReqDTO addPetReqDTO) {
-        AddPetResDTO response = AddPetResDTO.builder().id(petService.addPet(addPetReqDTO)).build();
-        return new SuccessResDTO<AddPetResDTO>(response);
+    public SuccessResDTO<Void> addPet(@RequestBody AddPetReqDTOList addPetReqDTO) {
+        petService.addPet(addPetReqDTO);
+        return new SuccessResDTO<Void>(null);
     }
 
     @Operation(summary = "펫 입양", description = "키우는 펫을 추가합니다.")
@@ -36,6 +39,13 @@ public class PetController {
         return new SuccessResDTO<>(null);
     }
 
+    @Operation(summary = "입양 가능 스타팅 펫 조회")
+    @GetMapping("/get-available-pet")
+    public SuccessResDTO<List<GetAvailableStartingPetDTO>> getAvailableStartingPet(@RequestHeader String userId) {
+        List<GetAvailableStartingPetDTO> response = petService.getAvailableStartingPet(userId);
+        return new SuccessResDTO<>(response);
+    }
+
     @Operation(summary = "일지", description = "일지 데이터를 불러옵니다.")
     @GetMapping("/adopted-pet-list")
     public SuccessResDTO<AdoptedPetResListDTO> getAdoptedPetList(@RequestHeader String userId) {
@@ -43,10 +53,10 @@ public class PetController {
         return new SuccessResDTO<AdoptedPetResListDTO>(response);
     }
 
-    @Operation(summary = "내 펫 정보", description = "일지에서 펫을 선택했을 때 불러오는 데이터입니다.")
+    @Operation(summary = "펫 성장 과정 조회", description = "일지에서 펫을 선택했을 때 불러오는 데이터입니다.")
     @GetMapping("/adopted-pet-list/my-pet-info/{signatureCode}")
     public SuccessResDTO<GetMyPetInfoResListDTO> getMyPetInfo(@RequestHeader String userId,
-                                        @PathVariable String signatureCode) {
+                                                              @PathVariable String signatureCode) {
         GetMyPetInfoResListDTO response = petService.getMyPetInfo(userId, signatureCode);
         return new SuccessResDTO<GetMyPetInfoResListDTO>(response);
     }
@@ -54,7 +64,7 @@ public class PetController {
     @Operation(summary = "내 펫 정보 자세히 보기", description = "특정 펫의 데이터를 return합니다.")
     @GetMapping("/adopted-pet-list/my-pet-info/detail/{seq}")
     public SuccessResDTO<PetDetailResDTO> getMyPetDetail(@RequestHeader String userId,
-                                          @PathVariable String seq) {
+                                                         @PathVariable String seq) {
         PetDetailResDTO response = petService.getPetDetail(userId, seq);
         return new SuccessResDTO<PetDetailResDTO>(response);
     }
@@ -62,7 +72,7 @@ public class PetController {
     @Operation(summary = "펫 이름 새로 짓기", description = "펫 이름을 변경합니다.")
     @PutMapping("/rename")
     public SuccessResDTO<Void> renamePet(@RequestHeader String userId,
-                                     @RequestBody RenamePetReqDTO renamePetReqDTO) {
+                                         @RequestBody RenamePetReqDTO renamePetReqDTO) {
         petService.renamePet(userId, renamePetReqDTO);
         return new SuccessResDTO<Void>(null);
     }
@@ -89,9 +99,41 @@ public class PetController {
         return new SuccessResDTO<UpdateExperiencePointResDTO>(response);
     }
 
-    @GetMapping("/main-pet")
-    public SuccessResDTO<String> getMainPet(@RequestHeader String userId) {
-        String response = petService.getMainPetByUserId(userId);
+    @Operation(summary = "진화 선택 리스트 조회", description = "펫 진화 모달 안에 표시될 펫들의 정보를 조회합니다.")
+    @GetMapping("/upgrade-choice/{petId}")
+    public SuccessResDTO<List<GetPetUpgradeChoiceResDTO>> getPetListInUpgradeChoiceModal(@RequestHeader String userId,
+                                                                                         @PathVariable String petId) {
+        List<GetPetUpgradeChoiceResDTO> response = petService.getPetUpgradeChoice(userId, petId);
+        return new SuccessResDTO<List<GetPetUpgradeChoiceResDTO>>(response);
+    }
+
+    @Operation(summary = "펫 진화", description = "펫을 진화시킵니다.")
+    @PostMapping("/evolve")
+    public SuccessResDTO<UpgradePetResDTO> evolvePet(@RequestHeader String userId,
+                                                     @RequestBody UpgradePetReqDTO req) {
+        UpgradePetResDTO response = petService.evolvePet(userId, req);
+        return new SuccessResDTO<UpgradePetResDTO>(response);
+    }
+
+    @Operation(summary = "펫 졸업", description = "펫을 졸업시킵니다.")
+    @PostMapping("/graduate")
+    public SuccessResDTO<GraduatePetResDTO> graduatePet(@RequestHeader String userId,
+                                                        @RequestBody GraduatePetReqDTO req) {
+        GraduatePetResDTO response = petService.graduatePet(userId, req);
+        return new SuccessResDTO<GraduatePetResDTO>(response);
+    }
+
+    @Operation(summary = "메인 펫 조회", description = "user id를 통해 main pet의 seq 값을 조회합니다.")
+    @GetMapping("/get-main-pet")
+    public SuccessResDTO<String> getMainPetSeq(@RequestHeader String userId) {
+        String response = petService.getMainPetSeqByUserId(userId);
+        return new SuccessResDTO<String>(response);
+    }
+
+    @Hidden
+    @GetMapping("/get-main-pet-infos")
+    public SuccessResDTO<GetMainPetInfosResDTO> getMainPetInfos(@RequestHeader String userId) {
+        GetMainPetInfosResDTO response = petService.getMainPetInfosByUserId(userId);
         return new SuccessResDTO<>(response);
     }
 }

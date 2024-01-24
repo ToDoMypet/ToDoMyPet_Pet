@@ -2,12 +2,15 @@ package com.todomypet.petservice.service;
 
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.todomypet.petservice.domain.node.Pet;
+import com.todomypet.petservice.domain.node.PetGradeType;
 import com.todomypet.petservice.domain.node.PetPersonalityType;
 import com.todomypet.petservice.domain.node.PetType;
 import com.todomypet.petservice.domain.relationship.Adopt;
 import com.todomypet.petservice.dto.*;
+import com.todomypet.petservice.dto.pet.*;
 import com.todomypet.petservice.exception.CustomException;
 import com.todomypet.petservice.exception.ErrorCode;
+import com.todomypet.petservice.mapper.PetMapper;
 import com.todomypet.petservice.repository.AdoptRepository;
 import com.todomypet.petservice.repository.PetRepository;
 import com.todomypet.petservice.repository.UserRepository;
@@ -30,29 +33,41 @@ public class PetServiceImpl implements PetService {
     private final PetRepository petRepository;
     private final AdoptRepository adoptRepository;
     private final UserRepository userRepository;
+    private final UserServiceClient userServiceClient;
+    private final PetMapper petMapper;
 
 
     @Transactional
     @Override
-    public String addPet(AddPetReqDTO addPetReqDTO) {
-        Pet p = Pet.builder().id(addPetReqDTO.getId())
-                    .petName(addPetReqDTO.getName())
-                    .petMaxExperiencePoint(addPetReqDTO.getMaxExperience())
-                    .petPortraitUrl(addPetReqDTO.getPortraitUrl())
-                    .petDescribe(addPetReqDTO.getDescribe())
-                    .petPersonality(PetPersonalityType.valueOf(addPetReqDTO.getPersonality()))
-                    .petCondition(addPetReqDTO.getPetCondition())
-                    .petType(addPetReqDTO.getType())
-                    .petGrade(addPetReqDTO.getGrade())
+    public void addPet(AddPetReqDTOList addPetReqDTO) {
+        for (AddPetReqDTO req : addPetReqDTO.getPetList()) {
+            Pet p = Pet.builder().id(req.getId())
+                    .petName(req.getName())
+                    .petMaxExperiencePoint(req.getMaxExperience())
+                    .petImageUrl(req.getImageUrl())
+                    .petPortraitUrl(req.getPortraitUrl())
+                    .petGif(req.getGif())
+                    .petDescribe(req.getDescribe())
+                    .petPersonality(PetPersonalityType.valueOf(req.getPersonality()))
+                    .petCondition(req.getPetCondition())
+                    .petType(req.getType())
+                    .petGrade(req.getGrade())
                     .build();
-        return petRepository.save(p).getId();
+            petRepository.save(p);
+        }
     }
 
     @Override
     @Transactional
     public void adoptPet(String userId, AdoptPetReqDTO adoptPetReqDTO) {
-        LocalDateTime adoptAt = LocalDateTime.parse(LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId())) {
+            try {
+                userServiceClient.increaseCollectionCountByUserId(userId);
+            } catch (Exception e) {
+                throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
+            }
+
+        }
 
         StringBuilder signatureCode = new StringBuilder();
         Random rnd = new Random();
@@ -70,11 +85,16 @@ public class PetServiceImpl implements PetService {
             }
         }
 
-        userRepository.increasePetCount(userId);
-
+        try {
+            userServiceClient.increasePetAcquireCountByUserId(userId);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
+        }
 
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, adoptPetReqDTO.getPetId(),
-                adoptPetReqDTO.getRename(), adoptAt, UlidCreator.getUlid().toString(), signatureCode.toString());
+                adoptPetReqDTO.getName(), UlidCreator.getUlid().toString(), signatureCode.toString(),
+                adoptPetReqDTO.isRenameOrNot());
+
     }
 
     @Override
@@ -86,7 +106,7 @@ public class PetServiceImpl implements PetService {
             AdoptedPetResDTO adoptedPetResDTO = AdoptedPetResDTO.builder()
                     .name(adopt.getName())
                     .experiencePoint(adopt.getExperiencePoint())
-                    .portraitUrl(pet.getPetPortraitUrl())
+                    .imageUrl(pet.getPetImageUrl())
                     .grade(pet.getPetGrade())
                     .maxExperiencePoint(pet.getPetMaxExperiencePoint())
                     .signatureCode(adopt.getSignatureCode())
@@ -104,23 +124,25 @@ public class PetServiceImpl implements PetService {
             Pet pet = petRepository.getPetBySeqOfAdopt(adopt.getSeq());
 
             GetMyPetInfoResDTO getMyPetInfoResDTO = GetMyPetInfoResDTO.builder()
-                    .portraitUrl(pet.getPetPortraitUrl())
+                    .imageUrl(pet.getPetImageUrl())
                     .name(adopt.getName())
                     .maxExperience(pet.getPetMaxExperiencePoint())
                     .experience(adopt.getExperiencePoint())
                     .grade(pet.getPetGrade())
-                    .graduated(adopt.getGraduated())
+                    .graduated(adopt.isGraduated())
+                    .seq(adopt.getSeq())
                     .build();
 
             getMyPetInfoResDTOList.add(getMyPetInfoResDTO);
         }
-        return GetMyPetInfoResListDTO.builder().build();
+        return GetMyPetInfoResListDTO.builder().petInfoList(getMyPetInfoResDTOList).build();
     }
 
     @Override
     @Transactional
     public PetDetailResDTO getPetDetail(String userId, String seq) {
-        Adopt adopt = adoptRepository.getAdoptBySeq(userId, seq);
+        Adopt adopt = adoptRepository.getAdoptBySeq(userId, seq)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_ADOPT_RELATIONSHIP));
         Pet pet = petRepository.getPetBySeqOfAdopt(seq);
 
         return PetDetailResDTO.builder()
@@ -129,14 +151,18 @@ public class PetServiceImpl implements PetService {
                 .type(pet.getPetType())
                 .personality(pet.getPetPersonality())
                 .description(pet.getPetDescribe())
-                .portraitUrl(pet.getPetPortraitUrl())
+                .imageUrl(pet.getPetImageUrl())
                 .build();
     }
 
     @Override
     public void renamePet(String userId, RenamePetReqDTO renamePetReqDTO) {
-        Adopt adopt = adoptRepository.getOneAdoptByUserIdAndSignatureCode(userId, renamePetReqDTO.getSignatureCode())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_COLLECT_USER_AND_SIGNATURE_CODE));
+        List<Adopt> adopt = adoptRepository.getAdoptByUserIdAndSignatureCode(userId, renamePetReqDTO.getSignatureCode());
+
+        if (adopt.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_COLLECT_USER_AND_SIGNATURE_CODE);
+        }
+
         adoptRepository.renamePet(userId, renamePetReqDTO.getSignatureCode(), renamePetReqDTO.getRename());
     }
 
@@ -153,7 +179,7 @@ public class PetServiceImpl implements PetService {
                 GetPetCollectionResDTO getPetCollectionResDTO = GetPetCollectionResDTO.builder()
                         .id(pet.getId())
                         .petName(pet.getPetName())
-                        .portraitUrl(pet.getPetPortraitUrl())
+                        .imageUrl(pet.getPetImageUrl())
                         .collected(adoptRepository.existsAdoptByUserIdAndPetId(userId, pet.getId()))
                         .describe(pet.getPetDescribe())
                         .personality(pet.getPetPersonality())
@@ -182,7 +208,7 @@ public class PetServiceImpl implements PetService {
             communityPetListResDTOList.add(CommunityPetListResDTO.builder()
                     .id(adopt.getSeq())
                     .petName(adopt.getName())
-                    .petImageUrl(petRepository.getPetBySeqOfAdopt(adopt.getSeq()).getPetPortraitUrl()).build());
+                    .petImageUrl(petRepository.getPetBySeqOfAdopt(adopt.getSeq()).getPetImageUrl()).build());
 
         }
         return communityPetListResDTOList;
@@ -195,7 +221,7 @@ public class PetServiceImpl implements PetService {
         log.info(">>> 경험치 획득 진입: (유저)" + userId + "/ (펫 seqId)" +
                 updateExperiencePointReqDTO.getPetSeqId() + " (기존 경험치)" + adoptRepository.getExperiencePointBySeqId(userId,
                 updateExperiencePointReqDTO.getPetSeqId()));
-        if (adoptRepository.getAdoptBySeq(userId, updateExperiencePointReqDTO.getPetSeqId()) == null) {
+        if (adoptRepository.getAdoptBySeq(userId, updateExperiencePointReqDTO.getPetSeqId()).isEmpty()) {
             throw new CustomException(ErrorCode.NOT_EXISTS_ADOPT_RELATIONSHIP);
         };
 
@@ -213,10 +239,157 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public String getMainPetByUserId(String userId) {
-        log.info(">>> 서버간 통신 수신: 메인 펫 조회: " + userId);
-        Adopt adopt = adoptRepository.getMainPetByUserId(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_MAIN_PET));
-        return adopt.getSeq();
+    public List<GetPetUpgradeChoiceResDTO> getPetUpgradeChoice(String userId, String petId) {
+        Pet pet = petRepository.getPetByPetId(petId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_PET));
+
+        PetGradeType nextGrade = getPetNextGradeType(pet);
+
+        List<Pet> petList = petRepository.getPetByGradeAndType(nextGrade, pet.getPetType());
+        List<GetPetUpgradeChoiceResDTO> response = new ArrayList<>();
+
+        for (Pet p: petList) {
+            GetPetUpgradeChoiceResDTO getPetUpgradeChoiceResDTO = GetPetUpgradeChoiceResDTO.builder()
+                    .petId(p.getId())
+                    .petName(p.getPetName())
+                    .petImageUrl(p.getPetImageUrl())
+                    .petGrade(nextGrade)
+                    .getOrNot(adoptRepository.existsAdoptByUserIdAndPetId(userId, p.getId()))
+                    .build();
+            response.add(getPetUpgradeChoiceResDTO);
+        }
+        return response;
     }
+
+    @Override
+    @Transactional
+    public UpgradePetResDTO evolvePet(String userId, UpgradePetReqDTO req) {
+        log.info(">>> 펫 진화 진입: (userId)" + userId + " " + "(펫 signatureCode)" + req.getSignatureCode());
+
+        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, req.getSelectedPetId())) {
+            try {
+                userServiceClient.increaseCollectionCountByUserId(userId);
+            } catch (Exception e) {
+                throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
+            }
+
+        }
+
+        Adopt adopt = adoptRepository.getAdoptBySeq(userId, req.getSeq())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_ADOPT_RELATIONSHIP));
+        adoptRepository.graduatePetBySeq(userId, adopt.getSeq());
+
+        String originName = req.getPetName();
+        String currentName = req.getPetName();
+        Pet pet = petRepository.getPetBySeqOfAdopt(req.getSeq());
+
+        if (adopt.getExperiencePoint() < pet.getPetMaxExperiencePoint()) {
+            throw new CustomException(ErrorCode.EXPERIENCE_POINT_NOT_SATISFIED);
+        }
+
+        if (adopt.isRenameOrNot()) {
+            log.info(">>> (" + userId + ") rename check");
+            originName = pet.getPetName();
+        }
+
+        adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
+                UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
+
+        try {
+            userServiceClient.increasePetEvolveCountByUserId(userId);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
+        }
+
+        // todo: 업적 달성 api 호출 필요
+//        User user = userRepository.findById(userId).orElseThrow();
+//
+//        earnAchievement(user, AchievementType.EVOLUTION, user.getPetEvolveCount());
+
+
+        return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
+                .currentName(currentName).petImageUrl(pet.getPetImageUrl()).build();
+    }
+
+    @Override
+    @Transactional
+    public GraduatePetResDTO graduatePet(String userId, GraduatePetReqDTO req) {
+        log.info(">>> 펫 졸업 진입: (userId)" + userId + " " + "(펫 seq)" + req.getPetSeq());
+
+        Adopt adopt = adoptRepository.getAdoptBySeq(userId, req.getPetSeq())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_ADOPT_RELATIONSHIP));
+
+        Pet pet = petRepository.getPetBySeqOfAdopt(req.getPetSeq());
+
+        if (pet.getPetGrade() != PetGradeType.ADULT) {
+            throw new CustomException(ErrorCode.GRADUATION_MUST_BE_ADULT_GRADE);
+        }
+
+        adoptRepository.graduatePetBySeq(userId, req.getPetSeq());
+
+        try {
+            userServiceClient.increasePetCompleteCountByUserId(userId);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
+        }
+
+        // todo: 업적 달성 api 호출 필요
+//        User user = userRepository.findById(userId).orElseThrow();
+//
+//        earnAchievement(user, AchievementType.GRADUATION, user.getPetCompleteCount());
+
+        return GraduatePetResDTO.builder().petName(adopt.getName()).petImageUrl(pet.getPetImageUrl()).build();
+    }
+
+    @Override
+    public String getMainPetSeqByUserId(String userId) {
+        return adoptRepository.getMainPetByUserId(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_MAIN_PET)).getSeq();
+    }
+
+    @Override
+    public List<GetAvailableStartingPetDTO> getAvailableStartingPet(String userId) {
+        List<Pet> petList = petRepository.getAvailablePet(userId);
+        List<GetAvailableStartingPetDTO> response = new ArrayList<>();
+        for (Pet p : petList) {
+            response.add(petMapper.petToGetAvailableStartingPetDTO(p));
+        }
+        return response;
+    }
+
+    @Override
+    public GetMainPetInfosResDTO getMainPetInfosByUserId(String userId) {
+        return null;
+    }
+
+    private static PetGradeType getPetNextGradeType(Pet pet) {
+        PetGradeType grade = pet.getPetGrade();
+
+        PetGradeType newGrade = null;
+        switch (grade) {
+            case BABY -> {
+                newGrade = PetGradeType.CHILDREN;
+            }
+            case CHILDREN -> {
+                newGrade = PetGradeType.TEENAGER;
+            }
+            case TEENAGER -> {
+                newGrade = PetGradeType.ADULT;
+            }
+            default -> {
+                throw new CustomException(ErrorCode.USER_NOT_EXISTS);
+            }
+        }
+        return newGrade;
+    }
+
+//    public void earnAchievement(User user, AchievementType achievementType, int achievementCondition) {
+//        Achievement achievement = achievementRepository
+//                .isSatisfyAchievementCondition(achievementType, achievementCondition);
+//        if (achievement != null) {
+//            achieveRepository.createAchieveBetweenUserAndAchievement(user.getId(), achievement.getId(),
+//                    String.valueOf(LocalDateTime.parse(DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss")
+//                            .format(LocalDateTime.now()))));
+//        };
+//    };
 }

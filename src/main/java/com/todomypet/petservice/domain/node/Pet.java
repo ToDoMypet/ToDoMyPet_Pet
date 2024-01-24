@@ -25,11 +25,17 @@ public class Pet {
     @Property("petGrade")
     private PetGradeType petGrade;
 
+    @Property("petImageUrl")
+    private String petImageUrl;
+
     @Property("petPortraitUrl")
     private String petPortraitUrl;
 
     @Property("petDescribe")
     private String petDescribe;
+
+    @Property("petGif")
+    private String petGif;
 
     @Property("petPersonality")
     private PetPersonalityType petPersonality;

@@ -1,4 +1,4 @@
-package com.todomypet.petservice.dto;
+package com.todomypet.petservice.dto.pet;
 
 import com.todomypet.petservice.domain.node.PetGradeType;
 import com.todomypet.petservice.domain.node.PetType;
@@ -17,7 +17,9 @@ public class AddPetReqDTO {
     private PetType type;
     private int maxExperience;
     private PetGradeType grade;
+    private String imageUrl;
     private String portraitUrl;
+    private String gif;
     private String describe;
     private String personality;
     private int petCondition;
