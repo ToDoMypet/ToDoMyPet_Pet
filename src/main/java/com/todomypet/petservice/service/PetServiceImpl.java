@@ -359,7 +359,13 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public GetMainPetInfosResDTO getMainPetInfosByUserId(String userId) {
-        return null;
+        Adopt adopt = adoptRepository.getMainPetByUserId(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_MAIN_PET));
+        Pet pet = petRepository.getPetBySeqOfAdopt(adopt.getSeq());
+        return GetMainPetInfosResDTO.builder().petGrade(String.valueOf(pet.getPetGrade())).petPortraitImageUrl(pet.getPetPortraitUrl())
+                .petGifUrl(pet.getPetGif()).petName(adopt.getName()).petExperiencePoint(adopt.getExperiencePoint())
+                .petMaxExperiencePoint(pet.getPetMaxExperiencePoint()).petPersonalityType(pet.getPetPersonality())
+                .petSignatureCode(adopt.getSignatureCode()).petSeq(adopt.getSeq()).build();
     }
 
     private static PetGradeType getPetNextGradeType(Pet pet) {
