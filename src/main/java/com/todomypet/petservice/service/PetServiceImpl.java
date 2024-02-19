@@ -1,10 +1,7 @@
 package com.todomypet.petservice.service;
 
 import com.github.f4b6a3.ulid.UlidCreator;
-import com.todomypet.petservice.domain.node.Pet;
-import com.todomypet.petservice.domain.node.PetGradeType;
-import com.todomypet.petservice.domain.node.PetPersonalityType;
-import com.todomypet.petservice.domain.node.PetType;
+import com.todomypet.petservice.domain.node.*;
 import com.todomypet.petservice.domain.relationship.Adopt;
 import com.todomypet.petservice.dto.*;
 import com.todomypet.petservice.dto.pet.*;
@@ -60,10 +57,11 @@ public class PetServiceImpl implements PetService {
     @Override
     @Transactional
     public void adoptPet(String userId, AdoptPetReqDTO adoptPetReqDTO) {
-        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId())) {
+        if (!adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId())) {
             try {
                 userServiceClient.increaseCollectionCountByUserId(userId);
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
             }
 
@@ -85,11 +83,12 @@ public class PetServiceImpl implements PetService {
             }
         }
 
-        try {
-            userServiceClient.increasePetAcquireCountByUserId(userId);
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
-        }
+//        try {
+//            userServiceClient.increasePetAcquireCountByUserId(userId);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
+//        }
 
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, adoptPetReqDTO.getPetId(),
                 adoptPetReqDTO.getName(), UlidCreator.getUlid().toString(), signatureCode.toString(),
@@ -343,8 +342,13 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public String getMainPetSeqByUserId(String userId) {
-        return adoptRepository.getMainPetByUserId(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_MAIN_PET)).getSeq();
+        Adopt adopt = adoptRepository.getMainPetByUserId(userId);
+
+        if (adopt == null) {
+            return null;
+        } else {
+            return adoptRepository.getMainPetByUserId(userId).getSeq();
+        }
     }
 
     @Override
@@ -359,8 +363,12 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public GetMainPetInfosResDTO getMainPetInfosByUserId(String userId) {
-        Adopt adopt = adoptRepository.getMainPetByUserId(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_MAIN_PET));
+        Adopt adopt = adoptRepository.getMainPetByUserId(userId);
+
+        if (adopt == null) {
+            throw new CustomException(ErrorCode.NOT_EXISTS_MAIN_PET);
+        }
+
         Pet pet = petRepository.getPetBySeqOfAdopt(adopt.getSeq());
         return GetMainPetInfosResDTO.builder().petGrade(String.valueOf(pet.getPetGrade())).petPortraitImageUrl(pet.getPetPortraitUrl())
                 .petGifUrl(pet.getPetGif()).petName(adopt.getName()).petExperiencePoint(adopt.getExperiencePoint())
