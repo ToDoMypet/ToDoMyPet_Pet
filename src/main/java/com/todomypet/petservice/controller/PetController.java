@@ -23,6 +23,11 @@ public class PetController {
 
     private final PetService petService;
 
+    @GetMapping("/get-pet-line")
+    public SuccessResDTO<Void> getPetLine() {
+        return new SuccessResDTO<>(null);
+    }
+
     // todo: 권한 설정 필요
     @Operation(summary = "펫 추가", description = "펫을 추가합니다. admin 전용 API입니다.")
     @PostMapping("/add")

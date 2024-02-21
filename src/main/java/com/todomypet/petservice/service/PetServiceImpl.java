@@ -10,14 +10,11 @@ import com.todomypet.petservice.exception.ErrorCode;
 import com.todomypet.petservice.mapper.PetMapper;
 import com.todomypet.petservice.repository.AdoptRepository;
 import com.todomypet.petservice.repository.PetRepository;
-import com.todomypet.petservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,7 +26,6 @@ public class PetServiceImpl implements PetService {
 
     private final PetRepository petRepository;
     private final AdoptRepository adoptRepository;
-    private final UserRepository userRepository;
     private final UserServiceClient userServiceClient;
     private final PetMapper petMapper;
 
@@ -179,7 +175,7 @@ public class PetServiceImpl implements PetService {
                         .id(pet.getId())
                         .petName(pet.getPetName())
                         .imageUrl(pet.getPetImageUrl())
-                        .collected(adoptRepository.existsAdoptByUserIdAndPetId(userId, pet.getId()))
+                        .collected(adoptRepository.getAdoptBetweenUserAndPet(userId, pet.getId()) != null)
                         .describe(pet.getPetDescribe())
                         .personality(pet.getPetPersonality())
                         .grade(pet.getPetGrade())
