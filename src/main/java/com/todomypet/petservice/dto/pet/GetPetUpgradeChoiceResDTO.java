@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class GetPetUpgradeChoiceResDTO {
-    private String petId;
+    private String id;
     private String petName;
     private PetGradeType petGrade;
     private String petImageUrl;
