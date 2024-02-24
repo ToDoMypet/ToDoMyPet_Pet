@@ -15,9 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -370,6 +368,128 @@ public class PetServiceImpl implements PetService {
                 .petGifUrl(pet.getPetGif()).petName(adopt.getName()).petExperiencePoint(adopt.getExperiencePoint())
                 .petMaxExperiencePoint(pet.getPetMaxExperiencePoint()).petPersonalityType(pet.getPetPersonality())
                 .petSignatureCode(adopt.getSignatureCode()).petSeq(adopt.getSeq()).build();
+    }
+
+    @Override
+    public GetPetLinesResDTO getPetLines() {
+
+        Map<String, String> resign = new HashMap<>();
+        resign.put("glutton", "속상해서 입맛이 없어졌어...");
+        resign.put("calm", "내를... 떠날기가...?");
+        resign.put("cheerful", "정말 저를 떠나실 건가요?");
+        resign.put("protein", "그동안 고마웠다. 건강해.");
+        resign.put("pure-evil", "어딜 간다구요...?");
+
+        Map<String, String> firstMeet = new HashMap<>();
+        firstMeet.put("glutton", "만반잘부~");
+        firstMeet.put("calm", "만나서 반갑심더");
+        firstMeet.put("cheerful", "잘 부탁드려요!");
+        firstMeet.put("protein", "반갑다");
+        firstMeet.put("pure-evil", "헤헤, 반가워요?");
+
+        Map<String, String> fullGuage = new HashMap<>();
+        fullGuage.put("glutton", "몸이 이상해~ 뭘 잘못 먹었나?");
+        fullGuage.put("calm", "와... 와이라노...?");
+        fullGuage.put("cheerful", "어어? 뭔가 이상한 기분이에요~");
+        fullGuage.put("protein", "몸이 이상하군 벌크업인가");
+        fullGuage.put("pure-evil", "어머, 기대되는걸요?");
+
+        Map<String, String> upgrade = new HashMap<>();
+        upgrade.put("glutton", "앗, 너무 많이 먹어 버렸나 봐!");
+        upgrade.put("calm", "나 진화해 뿟다");
+        upgrade.put("cheerful", "더 멋진 모습으로 만나서 기뻐요!");
+        upgrade.put("protein", "고맙다");
+        upgrade.put("pure-evil", "나 계속 예뻐해 줄 거죠?");
+
+        Map<String, List<String>> mainPageRandomLine = new HashMap<>();
+        mainPageRandomLine.put("glutton", Arrays.asList(
+                "할 일이 많을 때는 하나씩 차근차근!",
+                "화이팅!!",
+                "너무 멋져!",
+                "이거 비밀인데, 넌 내 자랑이야!",
+                "좋아해!",
+                "맛있는 음식은 생각만으로 신나",
+                "오늘 맛있는 거 먹었어?",
+                "오늘은 뭐해?",
+                "같이 맛집 투어 하고 싶어!",
+                "네가 어떤 모습이든 좋아!",
+                "세상엔 기분 좋은 일이 많아!",
+                "취미가 궁금해. 나는 맛집투어!",
+                "비슷해 보여도 매일 매일 다르네!",
+                "헤헤, 반가와",
+                "아싸~ 신나는 하루!"
+        ));
+        mainPageRandomLine.put("calm", Arrays.asList(
+                "괘안타. 할 수 있을 기다.",
+                "힘내라 안카나",
+                "아따 멋지다",
+                "일케 멋져가 우짜노",
+                "내 니 마이 좋아한다...",
+                "마이 뭇나? 마이 무라...",
+                "고마 됐다",
+                "만다꼬 이래 왔나?",
+                "우짜노 우야면 좋노...",
+                "아따... 니가 와따다",
+                "우짜긋노...",
+                "나도 힘낼끼다...",
+                "괘안타... 니는 괘안나",
+                "밥 뭇나?",
+                "단디 해라"
+        ));
+        mainPageRandomLine.put("cheerful", Arrays.asList(
+                "할 수 있어요! 화이팅이에요.",
+                "오늘도 화이팅이에요!",
+                "어제보다 오늘 더 성장했어요!",
+                "언제나 멋져요!",
+                "오늘 하루도 행복하게 보내요",
+                "뭔가 즐거운 일이 생길 것만 같아요!",
+                "고민이 많을 때는 저한테 나눠 줘요",
+                "오늘은 특별한 날이 될 것 같아요",
+                "함께라면 뭐든 즐거워요",
+                "제게는 언제나 최고예요!",
+                "힘들 땐 같이 웃어 봐요",
+                "즐거운 일도, 힘든 일도 함께해요",
+                "심심하면 절 불러 주세요",
+                "만날 때마다 행복한걸요?",
+                "매일이 즐거워요!"
+        ));
+        mainPageRandomLine.put("protein", Arrays.asList(
+                "할 수 있다",
+                "조금만 더 힘내도록",
+                "내가 다 뿌듯하구만",
+                "자랑스럽군",
+                "좋은 하루 돼라",
+                "잘 먹고 다녀",
+                "건강한 몸에 건강한 정신이!",
+                "별일 없나? 다행이군...",
+                "같이 운동하러 가지 않겠나?",
+                "최고다!",
+                "힘들어? 나한테 말해봐",
+                "힘들 땐 쉬면서 해라. 건강이 최고다.",
+                "다 울었나? 이제 할일을 하자",
+                "봐도 봐도 반갑군. 신기해.",
+                "널 위해선 근손실도 참을 수 있어"
+        ));
+        mainPageRandomLine.put("pure-evil", Arrays.asList(
+                "할 수 있어요. 그렇지?",
+                "너무 좋아요. 나랑 계속 있어.",
+                "역시 멋지네요?",
+                "당신은 나를 떠날 수 없어요...",
+                "내가 있어서 역시나 좋은 하루죠?",
+                "오늘도 날 찾았군요, 헤헤",
+                "계속 계속 보고 싶어",
+                "무서운 일은 없는 거죠?",
+                "나만 믿어요. 무서워하지 말고요.",
+                "우리는 항상 함께해야해요",
+                "나 없이 행복하지 말아요",
+                "너의 모든 걸 알고 싶어...",
+                "사랑한다고 말해 줘요",
+                "나 달라진 거 없어? 저 좀 봐 줘요",
+                "같이 있어요. 영원히..."
+        ));
+
+        return GetPetLinesResDTO.builder().resign(resign).firstMeet(firstMeet).fullGauge(fullGuage).upgrade(upgrade)
+                .mainPageRandomLine(mainPageRandomLine).build();
     }
 
     private static PetGradeType getPetNextGradeType(Pet pet) {

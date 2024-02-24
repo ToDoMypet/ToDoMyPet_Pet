@@ -23,9 +23,11 @@ public class PetController {
 
     private final PetService petService;
 
+    @Operation(summary = "펫 대사를 조회합니다.")
     @GetMapping("/get-pet-line")
-    public SuccessResDTO<Void> getPetLine() {
-        return new SuccessResDTO<>(null);
+    public SuccessResDTO<GetPetLinesResDTO> getPetLines() {
+        GetPetLinesResDTO response = petService.getPetLines();
+        return new SuccessResDTO<GetPetLinesResDTO>(response);
     }
 
     // todo: 권한 설정 필요

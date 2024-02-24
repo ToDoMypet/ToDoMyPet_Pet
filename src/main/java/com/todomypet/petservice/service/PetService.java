@@ -26,4 +26,6 @@ public interface PetService {
     List<GetAvailableStartingPetDTO> getAvailableStartingPet(String userId);
 
     GetMainPetInfosResDTO getMainPetInfosByUserId(String userId);
+
+    GetPetLinesResDTO getPetLines();
 }
