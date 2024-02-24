@@ -367,7 +367,7 @@ public class PetServiceImpl implements PetService {
         return GetMainPetInfosResDTO.builder().petGrade(String.valueOf(pet.getPetGrade())).petPortraitImageUrl(pet.getPetPortraitUrl())
                 .petGifUrl(pet.getPetGif()).petName(adopt.getName()).petExperiencePoint(adopt.getExperiencePoint())
                 .petMaxExperiencePoint(pet.getPetMaxExperiencePoint()).petPersonalityType(pet.getPetPersonality())
-                .petSignatureCode(adopt.getSignatureCode()).petSeq(adopt.getSeq()).build();
+                .petId(pet.getId()).petSignatureCode(adopt.getSignatureCode()).petSeq(adopt.getSeq()).build();
     }
 
     @Override
