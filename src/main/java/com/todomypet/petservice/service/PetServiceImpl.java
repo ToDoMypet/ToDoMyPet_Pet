@@ -79,12 +79,7 @@ public class PetServiceImpl implements PetService {
             }
         }
 
-//        try {
-//            userServiceClient.increasePetAcquireCountByUserId(userId);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
-//        }
+        userRepository.increasePetAcquireCount(userId);
 
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, adoptPetReqDTO.getPetId(),
                 adoptPetReqDTO.getName(), UlidCreator.getUlid().toString(), signatureCode.toString(),
