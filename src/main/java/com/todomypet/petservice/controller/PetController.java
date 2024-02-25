@@ -30,14 +30,6 @@ public class PetController {
         return new SuccessResDTO<GetPetLinesResDTO>(response);
     }
 
-    // todo: 권한 설정 필요
-    @Operation(summary = "펫 추가", description = "펫을 추가합니다. admin 전용 API입니다.")
-    @PostMapping("/add")
-    public SuccessResDTO<Void> addPet(@RequestBody AddPetReqDTOList addPetReqDTO) {
-        petService.addPet(addPetReqDTO);
-        return new SuccessResDTO<Void>(null);
-    }
-
     @Operation(summary = "펫 입양", description = "키우는 펫을 추가합니다.")
     @PostMapping("/adopt")
     public SuccessResDTO<Void> adoptPet(@RequestHeader String userId,
