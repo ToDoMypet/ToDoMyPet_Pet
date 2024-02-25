@@ -10,6 +10,7 @@ import com.todomypet.petservice.exception.ErrorCode;
 import com.todomypet.petservice.mapper.PetMapper;
 import com.todomypet.petservice.repository.AdoptRepository;
 import com.todomypet.petservice.repository.PetRepository;
+import com.todomypet.petservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class PetServiceImpl implements PetService {
     private final PetRepository petRepository;
     private final AdoptRepository adoptRepository;
     private final UserServiceClient userServiceClient;
+    private final UserRepository userRepository;
     private final PetMapper petMapper;
 
 
@@ -288,11 +290,8 @@ public class PetServiceImpl implements PetService {
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
                 UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
 
-        try {
-            userServiceClient.increasePetEvolveCountByUserId(userId);
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
-        }
+        userRepository.increasePetEvolveCountByUserId(userId);
+
 
         // todo: 업적 달성 api 호출 필요
 //        User user = userRepository.findById(userId).orElseThrow();

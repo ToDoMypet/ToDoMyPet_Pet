@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-key")
+@Tag(name = "Pet Admin Controller")
 @RequestMapping("/admin")
-@Tag(name = "Admin Controller")
 public class AdminController {
 
     private final PetService petService;
