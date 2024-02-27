@@ -158,7 +158,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public GetPetCollectionListResDTO getPetCollection(String userId) {
-        PetType[] petTypeList = {PetType.BREAD, PetType.GHOST};
+        PetType[] petTypeList = PetType.values();
         GetPetCollectionListResDTO getPetCollectionListResDTO = new GetPetCollectionListResDTO();
 
         for (int i = 0; i < petTypeList.length; i++) {
