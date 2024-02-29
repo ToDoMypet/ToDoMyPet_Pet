@@ -162,10 +162,8 @@ public class PetServiceImpl implements PetService {
     @Override
     public GetPetCollectionListResDTO getPetCollection(String userId) {
         PetType[] petTypeList = PetType.values();
-        GetPetCollectionListResDTO getPetCollectionListResDTO = new GetPetCollectionListResDTO();
-
+        HashMap<String, List<GetPetCollectionResDTO>> collectionList = new HashMap<>();
         for (int i = 0; i < petTypeList.length; i++) {
-            System.out.println(petTypeList[i]);
             List<Pet> petList = petRepository.getPetList(petTypeList[i]);
             List<GetPetCollectionResDTO> getPetCollectionResList = new ArrayList<>();
             for (int j = 0; j < petList.size(); j++) {
@@ -181,16 +179,9 @@ public class PetServiceImpl implements PetService {
                         .build();
                 getPetCollectionResList.add(getPetCollectionResDTO);
             }
-            switch (i) {
-                case 0 -> {
-                    getPetCollectionListResDTO.setBread(getPetCollectionResList);
-                }
-                case 1 -> {
-                    getPetCollectionListResDTO.setGhost(getPetCollectionResList);
-                }
-            }
+            collectionList.put(petTypeList[i].toString(), getPetCollectionResList);
         }
-        return getPetCollectionListResDTO;
+        return GetPetCollectionListResDTO.builder().collectionList(collectionList).build();
     }
 
     @Override
