@@ -289,13 +289,15 @@ public class PetServiceImpl implements PetService {
 //
 //        earnAchievement(user, AchievementType.EVOLUTION, user.getPetEvolveCount());
 
+            Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow();
             adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
                     UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
 
             userRepository.increasePetEvolveCountByUserId(userId);
 
+
             return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
-                    .currentName(currentName).petImageUrl(pet.getPetImageUrl()).build();
+                    .currentName(currentName).petImageUrl(selectedPet.getPetImageUrl()).build();
         }
 
         return null;
