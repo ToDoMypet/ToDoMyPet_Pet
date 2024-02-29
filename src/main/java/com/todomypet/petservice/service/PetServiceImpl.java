@@ -53,6 +53,10 @@ public class PetServiceImpl implements PetService {
     @Override
     @Transactional
     public void adoptPet(String userId, AdoptPetReqDTO adoptPetReqDTO) {
+        if (adoptRepository.getMainPetByUserId(userId) != null) {
+            return;
+        }
+
         if (!adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId())) {
             try {
                 userServiceClient.increaseCollectionCountByUserId(userId);
@@ -60,7 +64,6 @@ public class PetServiceImpl implements PetService {
                 e.printStackTrace();
                 throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
             }
-
         }
 
         StringBuilder signatureCode = new StringBuilder();
@@ -262,40 +265,40 @@ public class PetServiceImpl implements PetService {
             } catch (Exception e) {
                 throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
             }
-
         }
 
         Adopt adopt = adoptRepository.getAdoptBySeq(userId, req.getSeq())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_ADOPT_RELATIONSHIP));
         adoptRepository.graduatePetBySeq(userId, adopt.getSeq());
+        if (adoptRepository.getMainPetByUserId(userId) == null) {
+            String originName = req.getPetName();
+            String currentName = req.getPetName();
+            Pet pet = petRepository.getPetBySeqOfAdopt(req.getSeq());
 
-        String originName = req.getPetName();
-        String currentName = req.getPetName();
-        Pet pet = petRepository.getPetBySeqOfAdopt(req.getSeq());
+            if (adopt.getExperiencePoint() < pet.getPetMaxExperiencePoint()) {
+                throw new CustomException(ErrorCode.EXPERIENCE_POINT_NOT_SATISFIED);
+            }
 
-        if (adopt.getExperiencePoint() < pet.getPetMaxExperiencePoint()) {
-            throw new CustomException(ErrorCode.EXPERIENCE_POINT_NOT_SATISFIED);
-        }
+            if (adopt.isRenameOrNot()) {
+                log.info(">>> (" + userId + ") rename check");
+                originName = pet.getPetName();
+            }
 
-        if (adopt.isRenameOrNot()) {
-            log.info(">>> (" + userId + ") rename check");
-            originName = pet.getPetName();
-        }
-
-        adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
-                UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
-
-        userRepository.increasePetEvolveCountByUserId(userId);
-
-
-        // todo: 업적 달성 api 호출 필요
+            // todo: 업적 달성 api 호출 필요
 //        User user = userRepository.findById(userId).orElseThrow();
 //
 //        earnAchievement(user, AchievementType.EVOLUTION, user.getPetEvolveCount());
 
+            adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
+                    UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
 
-        return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
-                .currentName(currentName).petImageUrl(pet.getPetImageUrl()).build();
+            userRepository.increasePetEvolveCountByUserId(userId);
+
+            return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
+                    .currentName(currentName).petImageUrl(pet.getPetImageUrl()).build();
+        }
+
+        return null;
     }
 
     @Override
