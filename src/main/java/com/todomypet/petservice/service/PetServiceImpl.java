@@ -165,6 +165,7 @@ public class PetServiceImpl implements PetService {
         GetPetCollectionListResDTO getPetCollectionListResDTO = new GetPetCollectionListResDTO();
 
         for (int i = 0; i < petTypeList.length; i++) {
+            System.out.println(petTypeList[i]);
             List<Pet> petList = petRepository.getPetList(petTypeList[i]);
             List<GetPetCollectionResDTO> getPetCollectionResList = new ArrayList<>();
             for (int j = 0; j < petList.size(); j++) {
@@ -173,7 +174,7 @@ public class PetServiceImpl implements PetService {
                         .id(pet.getId())
                         .petName(pet.getPetName())
                         .imageUrl(pet.getPetImageUrl())
-                        .collected(adoptRepository.getAdoptBetweenUserAndPet(userId, pet.getId()) != null)
+                        .collected(!adoptRepository.getAdoptBetweenUserAndPet(userId, pet.getId()).isEmpty())
                         .describe(pet.getPetDescribe())
                         .personality(pet.getPetPersonality())
                         .grade(pet.getPetGrade())
