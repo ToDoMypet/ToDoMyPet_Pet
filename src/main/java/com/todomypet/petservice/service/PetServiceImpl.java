@@ -4,6 +4,9 @@ import com.github.f4b6a3.ulid.UlidCreator;
 import com.todomypet.petservice.domain.node.*;
 import com.todomypet.petservice.domain.relationship.Adopt;
 import com.todomypet.petservice.dto.*;
+import com.todomypet.petservice.dto.openFeign.AchieveReqDTO;
+import com.todomypet.petservice.dto.openFeign.CheckAchieveOrNotReqDTO;
+import com.todomypet.petservice.dto.openFeign.CheckAchieveOrNotResDTO;
 import com.todomypet.petservice.dto.pet.*;
 import com.todomypet.petservice.exception.CustomException;
 import com.todomypet.petservice.exception.ErrorCode;
@@ -312,15 +315,17 @@ public class PetServiceImpl implements PetService {
         adoptRepository.graduatePetBySeq(userId, req.getPetSeq());
 
         try {
-            userServiceClient.increasePetCompleteCountByUserId(userId);
+            int condition = userServiceClient.increaseAndGetPetCompleteCountByUserId(userId).getData();
+            CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
+                    CheckAchieveOrNotReqDTO.builder().type(AchievementType.GRADUATION).condition(condition)
+                            .build()).getData();
+            if (achievementOrNotRes.isAchieveOrNot()) {
+                userServiceClient.achieve(userId, AchieveReqDTO.builder()
+                        .achievementId(achievementOrNotRes.getAchievementId()).build());
+            };
         } catch (Exception e) {
             throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
         }
-
-        // todo: 업적 달성 api 호출 필요
-//        User user = userRepository.findById(userId).orElseThrow();
-//
-//        earnAchievement(user, AchievementType.GRADUATION, user.getPetCompleteCount());
 
         return GraduatePetResDTO.builder().petName(adopt.getName()).petImageUrl(pet.getPetImageUrl()).build();
     }
