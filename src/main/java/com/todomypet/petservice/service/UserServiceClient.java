@@ -18,7 +18,7 @@ public interface UserServiceClient {
     FeignClientResDTO<Void> increaseCollectionCountByUserId(@RequestHeader String userId);
 
     @PutMapping(value = "/increase-and-get-pet-evolve-count", consumes = "application/json")
-    FeignClientResDTO<Void> increasePetEvolveCountByUserId(@RequestHeader String userId);
+    FeignClientResDTO<Integer> increasePetEvolveCountByUserId(@RequestHeader String userId);
 
     @PutMapping(value = "/increase-and-get-pet-complete-count", consumes = "application/json")
     FeignClientResDTO<Integer> increaseAndGetPetCompleteCountByUserId(@RequestHeader String userId);
