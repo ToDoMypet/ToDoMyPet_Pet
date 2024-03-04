@@ -85,8 +85,6 @@ public class PetServiceImpl implements PetService {
             }
         }
 
-        userRepository.increasePetAcquireCount(userId);
-
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, adoptPetReqDTO.getPetId(),
                 adoptPetReqDTO.getName(), UlidCreator.getUlid().toString(), signatureCode.toString(),
                 adoptPetReqDTO.isRenameOrNot());
@@ -279,17 +277,23 @@ public class PetServiceImpl implements PetService {
                 originName = pet.getPetName();
             }
 
-            // todo: 업적 달성 api 호출 필요
-//        User user = userRepository.findById(userId).orElseThrow();
-//
-//        earnAchievement(user, AchievementType.EVOLUTION, user.getPetEvolveCount());
+
+            try {
+                int condition = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
+                CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
+                        CheckAchieveOrNotReqDTO.builder().type(AchievementType.EVOLUTION).condition(condition)
+                                .build()).getData();
+                if (achievementOrNotRes.isAchieveOrNot()) {
+                    userServiceClient.achieve(userId, AchieveReqDTO.builder()
+                            .achievementId(achievementOrNotRes.getAchievementId()).build());
+                };
+            } catch (Exception e) {
+                throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
+            }
 
             Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow();
             adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
                     UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
-
-            userRepository.increasePetEvolveCountByUserId(userId);
-
 
             return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
                     .currentName(currentName).petImageUrl(selectedPet.getPetImageUrl()).build();
