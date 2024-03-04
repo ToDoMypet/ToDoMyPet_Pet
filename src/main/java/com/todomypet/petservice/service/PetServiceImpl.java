@@ -279,12 +279,9 @@ public class PetServiceImpl implements PetService {
 
             try {
                 int condition = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
-                System.out.println(condition);
                 CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
                         CheckAchieveOrNotReqDTO.builder().type(AchievementType.EVOLUTION).condition(condition)
                                 .build()).getData();
-                System.out.println(achievementOrNotRes.isAchieveOrNot());
-                System.out.println(achievementOrNotRes.getAchievementId());
                 if (achievementOrNotRes.isAchieveOrNot()) {
                     userServiceClient.achieve(userId, AchieveReqDTO.builder()
                             .achievementId(achievementOrNotRes.getAchievementId()).build());
