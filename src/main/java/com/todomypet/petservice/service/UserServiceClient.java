@@ -32,5 +32,5 @@ public interface UserServiceClient {
                                     @RequestBody AchieveReqDTO achieveReqDTO);
 
     @PutMapping(value = "/increase-and-get-pet-evolve-count", consumes = "application/json")
-    FeignClientResDTO<Integer> increaseAndGetPetEvolveCountByUserId(String userId);
+    FeignClientResDTO<Integer> increaseAndGetPetEvolveCountByUserId(@RequestHeader String userId);
 }
