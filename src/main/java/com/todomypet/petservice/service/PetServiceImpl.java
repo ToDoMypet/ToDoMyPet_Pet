@@ -140,6 +140,7 @@ public class PetServiceImpl implements PetService {
         Pet pet = petRepository.getPetBySeqOfAdopt(seq);
 
         return PetDetailResDTO.builder()
+                .petOriginName(pet.getPetName())
                 .grade(pet.getPetGrade())
                 .name(adopt.getName())
                 .type(pet.getPetType())

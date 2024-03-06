@@ -10,6 +10,7 @@ import lombok.Getter;
 @Getter
 public class PetDetailResDTO {
     private PetGradeType grade;
+    private String petOriginName;
     private String name;
     private PetType type;
     private PetPersonalityType personality;
