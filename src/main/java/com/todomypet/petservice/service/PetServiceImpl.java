@@ -104,6 +104,7 @@ public class PetServiceImpl implements PetService {
                     .grade(pet.getPetGrade())
                     .maxExperiencePoint(pet.getPetMaxExperiencePoint())
                     .signatureCode(adopt.getSignatureCode())
+                    .graduated(adopt.isGraduated())
                     .build();
             adoptedPetResDTOList.add(adoptedPetResDTO);
         }

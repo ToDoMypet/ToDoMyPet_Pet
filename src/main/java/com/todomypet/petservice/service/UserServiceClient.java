@@ -28,7 +28,7 @@ public interface UserServiceClient {
                                                                  @RequestBody CheckAchieveOrNotReqDTO req);
 
     @PostMapping(value = "/achievement", consumes = "application/json")
-    FeignClientResDTO<Void> achieve(@RequestHeader String userId,
+    FeignClientResDTO<String> achieve(@RequestHeader String userId,
                                     @RequestBody AchieveReqDTO achieveReqDTO);
 
     @PutMapping(value = "/increase-and-get-pet-evolve-count", consumes = "application/json")
