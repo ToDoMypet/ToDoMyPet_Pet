@@ -378,28 +378,28 @@ public class PetServiceImpl implements PetService {
         resign.put("CALM", "내를... 떠날기가...?");
         resign.put("CHEERFUL", "정말 저를 떠나실 건가요?");
         resign.put("PROTEIN", "그동안 고마웠다. 건강해.");
-        resign.put("PURE-EVIL", "어딜 간다구요...?");
+        resign.put("PURE_EVIL", "어딜 간다구요...?");
 
         Map<String, String> firstMeet = new HashMap<>();
         firstMeet.put("GLUTTON", "만반잘부~");
         firstMeet.put("CALM", "만나서 반갑심더");
         firstMeet.put("CHEERFUL", "잘 부탁드려요!");
         firstMeet.put("PROTEIN", "반갑다");
-        firstMeet.put("PURE-EVIL", "헤헤, 반가워요?");
+        firstMeet.put("PURE_EVIL", "헤헤, 반가워요?");
 
         Map<String, String> fullGuage = new HashMap<>();
         fullGuage.put("GLUTTON", "몸이 이상해~ 뭘 잘못 먹었나?");
         fullGuage.put("CALM", "와... 와이라노...?");
         fullGuage.put("CHEERFUL", "어어? 뭔가 이상한 기분이에요~");
         fullGuage.put("PROTEIN", "몸이 이상하군 벌크업인가");
-        fullGuage.put("PURE-EVIL", "어머, 기대되는걸요?");
+        fullGuage.put("PURE_EVIL", "어머, 기대되는걸요?");
 
         Map<String, String> upgrade = new HashMap<>();
         upgrade.put("GLUTTON", "앗, 너무 많이 먹어 버렸나 봐!");
         upgrade.put("CALM", "나 진화해 뿟다");
         upgrade.put("CHEERFUL", "더 멋진 모습으로 만나서 기뻐요!");
         upgrade.put("PROTEIN", "고맙다");
-        upgrade.put("PURE-EVIL", "나 계속 예뻐해 줄 거죠?");
+        upgrade.put("PURE_EVIL", "나 계속 예뻐해 줄 거죠?");
 
         Map<String, List<String>> mainPageRandomLine = new HashMap<>();
         mainPageRandomLine.put("GLUTTON", Arrays.asList(
@@ -470,7 +470,7 @@ public class PetServiceImpl implements PetService {
                 "봐도 봐도 반갑군. 신기해.",
                 "널 위해선 근손실도 참을 수 있어"
         ));
-        mainPageRandomLine.put("PURE-EVIL", Arrays.asList(
+        mainPageRandomLine.put("PURE_EVIL", Arrays.asList(
                 "할 수 있어요. 그렇지?",
                 "너무 좋아요. 나랑 계속 있어.",
                 "역시 멋지네요?",
