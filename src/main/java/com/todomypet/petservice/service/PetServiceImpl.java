@@ -85,8 +85,6 @@ public class PetServiceImpl implements PetService {
             }
         }
 
-        userRepository.increasePetAcquireCount(userId);
-
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, adoptPetReqDTO.getPetId(),
                 adoptPetReqDTO.getName(), UlidCreator.getUlid().toString(), signatureCode.toString(),
                 adoptPetReqDTO.isRenameOrNot());
@@ -142,6 +140,7 @@ public class PetServiceImpl implements PetService {
         Pet pet = petRepository.getPetBySeqOfAdopt(seq);
 
         return PetDetailResDTO.builder()
+                .petOriginName(pet.getPetName())
                 .grade(pet.getPetGrade())
                 .name(adopt.getName())
                 .type(pet.getPetType())
@@ -279,17 +278,22 @@ public class PetServiceImpl implements PetService {
                 originName = pet.getPetName();
             }
 
-            // todo: 업적 달성 api 호출 필요
-//        User user = userRepository.findById(userId).orElseThrow();
-//
-//        earnAchievement(user, AchievementType.EVOLUTION, user.getPetEvolveCount());
+            try {
+                int condition = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
+                CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
+                        CheckAchieveOrNotReqDTO.builder().type(AchievementType.EVOLUTION).condition(condition)
+                                .build()).getData();
+                if (achievementOrNotRes.isAchieveOrNot()) {
+                    userServiceClient.achieve(userId, AchieveReqDTO.builder()
+                            .achievementId(achievementOrNotRes.getAchievementId()).build());
+                };
+            } catch (Exception e) {
+                throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
+            }
 
             Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow();
             adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
                     UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
-
-            userRepository.increasePetEvolveCountByUserId(userId);
-
 
             return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
                     .currentName(currentName).petImageUrl(selectedPet.getPetImageUrl()).build();
@@ -370,35 +374,35 @@ public class PetServiceImpl implements PetService {
     public GetPetLinesResDTO getPetLines() {
 
         Map<String, String> resign = new HashMap<>();
-        resign.put("glutton", "속상해서 입맛이 없어졌어...");
-        resign.put("calm", "내를... 떠날기가...?");
-        resign.put("cheerful", "정말 저를 떠나실 건가요?");
-        resign.put("protein", "그동안 고마웠다. 건강해.");
-        resign.put("pure-evil", "어딜 간다구요...?");
+        resign.put("GLUTTON", "속상해서 입맛이 없어졌어...");
+        resign.put("CALM", "내를... 떠날기가...?");
+        resign.put("CHEERFUL", "정말 저를 떠나실 건가요?");
+        resign.put("PROTEIN", "그동안 고마웠다. 건강해.");
+        resign.put("PURE-EVIL", "어딜 간다구요...?");
 
         Map<String, String> firstMeet = new HashMap<>();
-        firstMeet.put("glutton", "만반잘부~");
-        firstMeet.put("calm", "만나서 반갑심더");
-        firstMeet.put("cheerful", "잘 부탁드려요!");
-        firstMeet.put("protein", "반갑다");
-        firstMeet.put("pure-evil", "헤헤, 반가워요?");
+        firstMeet.put("GLUTTON", "만반잘부~");
+        firstMeet.put("CALM", "만나서 반갑심더");
+        firstMeet.put("CHEERFUL", "잘 부탁드려요!");
+        firstMeet.put("PROTEIN", "반갑다");
+        firstMeet.put("PURE-EVIL", "헤헤, 반가워요?");
 
         Map<String, String> fullGuage = new HashMap<>();
-        fullGuage.put("glutton", "몸이 이상해~ 뭘 잘못 먹었나?");
-        fullGuage.put("calm", "와... 와이라노...?");
-        fullGuage.put("cheerful", "어어? 뭔가 이상한 기분이에요~");
-        fullGuage.put("protein", "몸이 이상하군 벌크업인가");
-        fullGuage.put("pure-evil", "어머, 기대되는걸요?");
+        fullGuage.put("GLUTTON", "몸이 이상해~ 뭘 잘못 먹었나?");
+        fullGuage.put("CALM", "와... 와이라노...?");
+        fullGuage.put("CHEERFUL", "어어? 뭔가 이상한 기분이에요~");
+        fullGuage.put("PROTEIN", "몸이 이상하군 벌크업인가");
+        fullGuage.put("PURE-EVIL", "어머, 기대되는걸요?");
 
         Map<String, String> upgrade = new HashMap<>();
-        upgrade.put("glutton", "앗, 너무 많이 먹어 버렸나 봐!");
-        upgrade.put("calm", "나 진화해 뿟다");
-        upgrade.put("cheerful", "더 멋진 모습으로 만나서 기뻐요!");
-        upgrade.put("protein", "고맙다");
-        upgrade.put("pure-evil", "나 계속 예뻐해 줄 거죠?");
+        upgrade.put("GLUTTON", "앗, 너무 많이 먹어 버렸나 봐!");
+        upgrade.put("CALM", "나 진화해 뿟다");
+        upgrade.put("CHEERFUL", "더 멋진 모습으로 만나서 기뻐요!");
+        upgrade.put("PROTEIN", "고맙다");
+        upgrade.put("PURE-EVIL", "나 계속 예뻐해 줄 거죠?");
 
         Map<String, List<String>> mainPageRandomLine = new HashMap<>();
-        mainPageRandomLine.put("glutton", Arrays.asList(
+        mainPageRandomLine.put("GLUTTON", Arrays.asList(
                 "할 일이 많을 때는 하나씩 차근차근!",
                 "화이팅!!",
                 "너무 멋져!",
@@ -415,7 +419,7 @@ public class PetServiceImpl implements PetService {
                 "헤헤, 반가와",
                 "아싸~ 신나는 하루!"
         ));
-        mainPageRandomLine.put("calm", Arrays.asList(
+        mainPageRandomLine.put("CALM", Arrays.asList(
                 "괘안타. 할 수 있을 기다.",
                 "힘내라 안카나",
                 "아따 멋지다",
@@ -432,7 +436,7 @@ public class PetServiceImpl implements PetService {
                 "밥 뭇나?",
                 "단디 해라"
         ));
-        mainPageRandomLine.put("cheerful", Arrays.asList(
+        mainPageRandomLine.put("CHEERFUL", Arrays.asList(
                 "할 수 있어요! 화이팅이에요.",
                 "오늘도 화이팅이에요!",
                 "어제보다 오늘 더 성장했어요!",
@@ -449,7 +453,7 @@ public class PetServiceImpl implements PetService {
                 "만날 때마다 행복한걸요?",
                 "매일이 즐거워요!"
         ));
-        mainPageRandomLine.put("protein", Arrays.asList(
+        mainPageRandomLine.put("PROTEIN", Arrays.asList(
                 "할 수 있다",
                 "조금만 더 힘내도록",
                 "내가 다 뿌듯하구만",
@@ -466,7 +470,7 @@ public class PetServiceImpl implements PetService {
                 "봐도 봐도 반갑군. 신기해.",
                 "널 위해선 근손실도 참을 수 있어"
         ));
-        mainPageRandomLine.put("pure-evil", Arrays.asList(
+        mainPageRandomLine.put("PURE-EVIL", Arrays.asList(
                 "할 수 있어요. 그렇지?",
                 "너무 좋아요. 나랑 계속 있어.",
                 "역시 멋지네요?",
