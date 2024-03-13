@@ -255,11 +255,7 @@ public class PetServiceImpl implements PetService {
         log.info(">>> 펫 진화 진입: (userId)" + userId + " " + "(펫 signatureCode)" + req.getSignatureCode());
 
         if (!adoptRepository.existsAdoptByUserIdAndPetId(userId, req.getSelectedPetId())) {
-            try {
-                int collectionCount = userServiceClient.increaseCollectionCountByUserId(userId).getData();
-            } catch (Exception e) {
-                throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
-            }
+            int collectionCount = userServiceClient.increaseCollectionCountByUserId(userId).getData();
         }
 
         Adopt adopt = adoptRepository.getAdoptBySeq(userId, req.getSeq())
