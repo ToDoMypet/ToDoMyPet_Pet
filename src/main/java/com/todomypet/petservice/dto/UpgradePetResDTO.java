@@ -9,5 +9,6 @@ public class UpgradePetResDTO {
     private boolean renameOrNot;
     private String originName;
     private String currentName;
+    private String selectPetOriginName;
     private String petImageUrl;
 }

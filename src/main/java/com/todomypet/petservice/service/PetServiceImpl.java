@@ -290,13 +290,20 @@ public class PetServiceImpl implements PetService {
             };
 
             Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow();
-            adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
-                    UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
+            String newName = selectedPet.getId();
+
+
+            if (adopt.isRenameOrNot()) {
+                adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
+                        UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
+            } else {
+                adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), newName,
+                        UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
+            }
 
             return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
-                    .currentName(currentName).petImageUrl(selectedPet.getPetImageUrl()).build();
+                    .currentName(currentName).selectPetOriginName(newName).petImageUrl(selectedPet.getPetImageUrl()).build();
         }
-
         return null;
     }
 
