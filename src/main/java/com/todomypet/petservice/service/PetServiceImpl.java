@@ -281,17 +281,13 @@ public class PetServiceImpl implements PetService {
 
             int condition = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
 
-            try {
-                CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
-                        CheckAchieveOrNotReqDTO.builder().type(AchievementType.EVOLUTION).condition(condition)
-                                .build()).getData();
-                if (achievementOrNotRes.isAchieveOrNot()) {
-                    userServiceClient.achieve(userId, AchieveReqDTO.builder()
-                            .achievementId(achievementOrNotRes.getAchievementId()).build());
-                };
-            } catch (Exception e) {
-                throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
-            }
+            CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
+                    CheckAchieveOrNotReqDTO.builder().type(AchievementType.EVOLUTION).condition(condition)
+                            .build()).getData();
+            if (achievementOrNotRes.isAchieveOrNot()) {
+                userServiceClient.achieve(userId, AchieveReqDTO.builder()
+                        .achievementId(achievementOrNotRes.getAchievementId()).build());
+            };
 
             Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow();
             adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
@@ -320,18 +316,14 @@ public class PetServiceImpl implements PetService {
 
         adoptRepository.graduatePetBySeq(userId, req.getPetSeq());
 
-        try {
-            int condition = userServiceClient.increaseAndGetPetCompleteCountByUserId(userId).getData();
-            CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
-                    CheckAchieveOrNotReqDTO.builder().type(AchievementType.GRADUATION).condition(condition)
-                            .build()).getData();
-            if (achievementOrNotRes.isAchieveOrNot()) {
-                userServiceClient.achieve(userId, AchieveReqDTO.builder()
-                        .achievementId(achievementOrNotRes.getAchievementId()).build());
-            };
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
-        }
+        int condition = userServiceClient.increaseAndGetPetCompleteCountByUserId(userId).getData();
+        CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
+                CheckAchieveOrNotReqDTO.builder().type(AchievementType.GRADUATION).condition(condition)
+                        .build()).getData();
+        if (achievementOrNotRes.isAchieveOrNot()) {
+            userServiceClient.achieve(userId, AchieveReqDTO.builder()
+                    .achievementId(achievementOrNotRes.getAchievementId()).build());
+        };
 
         return GraduatePetResDTO.builder().petName(adopt.getName()).petImageUrl(pet.getPetImageUrl()).build();
     }
