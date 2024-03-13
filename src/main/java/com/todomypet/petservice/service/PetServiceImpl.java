@@ -290,7 +290,7 @@ public class PetServiceImpl implements PetService {
             };
 
             Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow();
-            String newName = selectedPet.getId();
+            String newName = selectedPet.getPetName();
 
 
             if (adopt.isRenameOrNot()) {
