@@ -254,7 +254,7 @@ public class PetServiceImpl implements PetService {
     public UpgradePetResDTO evolvePet(String userId, UpgradePetReqDTO req) {
         log.info(">>> 펫 진화 진입: (userId)" + userId + " " + "(펫 signatureCode)" + req.getSignatureCode());
 
-        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, req.getSelectedPetId())) {
+        if (!adoptRepository.existsAdoptByUserIdAndPetId(userId, req.getSelectedPetId())) {
             try {
                 userServiceClient.increaseCollectionCountByUserId(userId);
             } catch (Exception e) {
@@ -279,8 +279,9 @@ public class PetServiceImpl implements PetService {
                 originName = pet.getPetName();
             }
 
+            int condition = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
+
             try {
-                int condition = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
                 CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
                         CheckAchieveOrNotReqDTO.builder().type(AchievementType.EVOLUTION).condition(condition)
                                 .build()).getData();
