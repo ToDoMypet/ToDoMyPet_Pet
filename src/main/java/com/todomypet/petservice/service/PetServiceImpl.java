@@ -283,11 +283,12 @@ public class PetServiceImpl implements PetService {
             if (achievementOrNotRes.isAchieveOrNot()) {
                 String response = userServiceClient.achieve(userId, AchieveReqDTO.builder()
                         .achievementId(achievementOrNotRes.getAchievementId()).build()).getData();
+                log.info(">>> 서버간 통신 후 response 수신: " + response);
             };
 
-            Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow();
+            Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow(()
+                    -> new CustomException(ErrorCode.NOT_EXISTS_PET));
             String newName = selectedPet.getPetName();
-
 
             if (adopt.isRenameOrNot()) {
                 adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
