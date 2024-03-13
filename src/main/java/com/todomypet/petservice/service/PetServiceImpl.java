@@ -285,8 +285,8 @@ public class PetServiceImpl implements PetService {
                     CheckAchieveOrNotReqDTO.builder().type(AchievementType.EVOLUTION).condition(condition)
                             .build()).getData();
             if (achievementOrNotRes.isAchieveOrNot()) {
-                userServiceClient.achieve(userId, AchieveReqDTO.builder()
-                        .achievementId(achievementOrNotRes.getAchievementId()).build());
+                String response = userServiceClient.achieve(userId, AchieveReqDTO.builder()
+                        .achievementId(achievementOrNotRes.getAchievementId()).build()).getData();
             };
 
             Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow();
@@ -321,8 +321,8 @@ public class PetServiceImpl implements PetService {
                 CheckAchieveOrNotReqDTO.builder().type(AchievementType.GRADUATION).condition(condition)
                         .build()).getData();
         if (achievementOrNotRes.isAchieveOrNot()) {
-            userServiceClient.achieve(userId, AchieveReqDTO.builder()
-                    .achievementId(achievementOrNotRes.getAchievementId()).build());
+            String response = userServiceClient.achieve(userId, AchieveReqDTO.builder()
+                    .achievementId(achievementOrNotRes.getAchievementId()).build()).getData();
         };
 
         return GraduatePetResDTO.builder().petName(adopt.getName()).petImageUrl(pet.getPetImageUrl()).build();
