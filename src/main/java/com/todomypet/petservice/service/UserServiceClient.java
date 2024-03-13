@@ -15,7 +15,7 @@ import java.awt.datatransfer.Clipboard;
 @FeignClient(name = "user-service", url="${feign.user.url}")
 public interface UserServiceClient {
     @PutMapping(value = "/increase-collection-count", consumes = "application/json")
-    FeignClientResDTO<Void> increaseCollectionCountByUserId(@RequestHeader String userId);
+    FeignClientResDTO<Integer> increaseCollectionCountByUserId(@RequestHeader String userId);
 
     @PutMapping(value = "/increase-and-get-pet-evolve-count", consumes = "application/json")
     FeignClientResDTO<Integer> increasePetEvolveCountByUserId(@RequestHeader String userId);

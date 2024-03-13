@@ -256,7 +256,7 @@ public class PetServiceImpl implements PetService {
 
         if (!adoptRepository.existsAdoptByUserIdAndPetId(userId, req.getSelectedPetId())) {
             try {
-                userServiceClient.increaseCollectionCountByUserId(userId);
+                int collectionCount = userServiceClient.increaseCollectionCountByUserId(userId).getData();
             } catch (Exception e) {
                 throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
             }
