@@ -8,4 +8,7 @@ import lombok.Getter;
 public class GraduatePetResDTO {
     private String petImageUrl;
     private String petName;
+    private boolean renameOrNot;
+    private String originName;
+    private String currentName;
 }
