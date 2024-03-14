@@ -60,7 +60,7 @@ public class PetServiceImpl implements PetService {
             return;
         }
 
-        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId()) != null) {
+        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId()) == null) {
             try {
                 userServiceClient.increaseCollectionCountByUserId(userId);
             } catch (Exception e) {
