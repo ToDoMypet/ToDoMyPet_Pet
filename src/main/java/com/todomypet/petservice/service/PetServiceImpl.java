@@ -282,7 +282,7 @@ public class PetServiceImpl implements PetService {
 
         return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
                 .currentName(currentName).selectPetOriginName(newName)
-                .petImageUrl(selectedPet.getPetImageUrl()).build();
+                .petImageUrl(selectedPet.getPetImageUrl()).petPersonalityType(selectedPet.getPetPersonality()).build();
     }
 
     @Override

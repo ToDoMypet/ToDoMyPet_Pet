@@ -1,5 +1,6 @@
 package com.todomypet.petservice.dto;
 
+import com.todomypet.petservice.domain.node.PetPersonalityType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,4 +12,5 @@ public class UpgradePetResDTO {
     private String currentName;
     private String selectPetOriginName;
     private String petImageUrl;
+    private PetPersonalityType petPersonalityType;
 }
