@@ -286,11 +286,11 @@ public class PetServiceImpl implements PetService {
                     UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
         }
 
-        int evolveCount = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
+        // int evolveCount = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
 
         return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
                 .currentName(currentName).selectPetOriginName(newName)
-                .achCondition(evolveCount).petImageUrl(selectedPet.getPetImageUrl()).build();
+                .petImageUrl(selectedPet.getPetImageUrl()).build();
     }
 
     @Override
