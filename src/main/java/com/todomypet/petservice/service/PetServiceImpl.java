@@ -275,17 +275,6 @@ public class PetServiceImpl implements PetService {
                 originName = pet.getPetName();
             }
 
-            int condition = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
-
-            CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
-                    CheckAchieveOrNotReqDTO.builder().type(AchievementType.EVOLUTION).condition(condition)
-                            .build()).getData();
-            if (achievementOrNotRes.isAchieveOrNot()) {
-                String response = userServiceClient.achieve(userId, AchieveReqDTO.builder()
-                        .achievementId(achievementOrNotRes.getAchievementId()).build()).getData();
-                log.info(">>> 서버간 통신 후 response 수신: " + response);
-            };
-
             Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow(()
                     -> new CustomException(ErrorCode.NOT_EXISTS_PET));
             String newName = selectedPet.getPetName();
@@ -298,8 +287,11 @@ public class PetServiceImpl implements PetService {
                         UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
             }
 
+            int evolveCount = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
+
             return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
-                    .currentName(currentName).selectPetOriginName(newName).petImageUrl(selectedPet.getPetImageUrl()).build();
+                    .currentName(currentName).selectPetOriginName(newName)
+                    .achCondition(evolveCount).petImageUrl(selectedPet.getPetImageUrl()).build();
         }
         return null;
     }
@@ -321,15 +313,9 @@ public class PetServiceImpl implements PetService {
         adoptRepository.graduatePetBySeq(userId, req.getPetSeq());
 
         int condition = userServiceClient.increaseAndGetPetCompleteCountByUserId(userId).getData();
-        CheckAchieveOrNotResDTO achievementOrNotRes = userServiceClient.checkAchieveOrNot(userId,
-                CheckAchieveOrNotReqDTO.builder().type(AchievementType.GRADUATION).condition(condition)
-                        .build()).getData();
-        if (achievementOrNotRes.isAchieveOrNot()) {
-            String response = userServiceClient.achieve(userId, AchieveReqDTO.builder()
-                    .achievementId(achievementOrNotRes.getAchievementId()).build()).getData();
-        };
 
-        return GraduatePetResDTO.builder().petName(adopt.getName()).petImageUrl(pet.getPetImageUrl()).build();
+        return GraduatePetResDTO.builder().petName(adopt.getName())
+                .petImageUrl(pet.getPetImageUrl()).achCondition(condition).build();
     }
 
     @Override

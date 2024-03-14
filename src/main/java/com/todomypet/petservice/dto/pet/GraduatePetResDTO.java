@@ -8,4 +8,5 @@ import lombok.Getter;
 public class GraduatePetResDTO {
     private String petImageUrl;
     private String petName;
+    private int achCondition;
 }
