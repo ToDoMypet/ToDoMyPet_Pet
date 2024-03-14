@@ -60,7 +60,7 @@ public class PetServiceImpl implements PetService {
             return;
         }
 
-        if (!adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId())) {
+        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId()) != null) {
             try {
                 userServiceClient.increaseCollectionCountByUserId(userId);
             } catch (Exception e) {
@@ -242,7 +242,7 @@ public class PetServiceImpl implements PetService {
                     .petName(p.getPetName())
                     .petImageUrl(p.getPetImageUrl())
                     .petGrade(nextGrade)
-                    .getOrNot(adoptRepository.existsAdoptByUserIdAndPetId(userId, p.getId()))
+                    .getOrNot(adoptRepository.existsAdoptByUserIdAndPetId(userId, p.getId()) != null)
                     .build();
             response.add(getPetUpgradeChoiceResDTO);
         }
@@ -254,46 +254,43 @@ public class PetServiceImpl implements PetService {
     public UpgradePetResDTO evolvePet(String userId, UpgradePetReqDTO req) {
         log.info(">>> 펫 진화 진입: (userId)" + userId + " " + "(펫 signatureCode)" + req.getSignatureCode());
 
-        if (!adoptRepository.existsAdoptByUserIdAndPetId(userId, req.getSelectedPetId())) {
+        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, req.getSelectedPetId()) == null) {
             int collectionCount = userServiceClient.increaseCollectionCountByUserId(userId).getData();
         }
 
         Adopt adopt = adoptRepository.getAdoptBySeq(userId, req.getSeq())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXISTS_ADOPT_RELATIONSHIP));
         adoptRepository.graduatePetBySeq(userId, adopt.getSeq());
-        if (adoptRepository.getMainPetByUserId(userId) == null) {
-            String originName = req.getPetName();
-            String currentName = req.getPetName();
-            Pet pet = petRepository.getPetBySeqOfAdopt(req.getSeq());
+        String originName = req.getPetName();
+        String currentName = req.getPetName();
+        Pet pet = petRepository.getPetBySeqOfAdopt(req.getSeq());
 
-            if (adopt.getExperiencePoint() < pet.getPetMaxExperiencePoint()) {
-                throw new CustomException(ErrorCode.EXPERIENCE_POINT_NOT_SATISFIED);
-            }
-
-            if (adopt.isRenameOrNot()) {
-                log.info(">>> (" + userId + ") rename check");
-                originName = pet.getPetName();
-            }
-
-            Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow(()
-                    -> new CustomException(ErrorCode.NOT_EXISTS_PET));
-            String newName = selectedPet.getPetName();
-
-            if (adopt.isRenameOrNot()) {
-                adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
-                        UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
-            } else {
-                adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), newName,
-                        UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
-            }
-
-            int evolveCount = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
-
-            return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
-                    .currentName(currentName).selectPetOriginName(newName)
-                    .achCondition(evolveCount).petImageUrl(selectedPet.getPetImageUrl()).build();
+        if (adopt.getExperiencePoint() < pet.getPetMaxExperiencePoint()) {
+            throw new CustomException(ErrorCode.EXPERIENCE_POINT_NOT_SATISFIED);
         }
-        return null;
+
+        if (adopt.isRenameOrNot()) {
+            log.info(">>> (" + userId + ") rename check");
+            originName = pet.getPetName();
+        }
+
+        Pet selectedPet = petRepository.getPetByPetId(req.getSelectedPetId()).orElseThrow(()
+                -> new CustomException(ErrorCode.NOT_EXISTS_PET));
+        String newName = selectedPet.getPetName();
+
+        if (adopt.isRenameOrNot()) {
+            adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), currentName,
+                    UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
+        } else {
+            adoptRepository.createAdoptBetweenAdoptAndUser(userId, req.getSelectedPetId(), newName,
+                    UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
+        }
+
+        int evolveCount = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
+
+        return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
+                .currentName(currentName).selectPetOriginName(newName)
+                .achCondition(evolveCount).petImageUrl(selectedPet.getPetImageUrl()).build();
     }
 
     @Override
