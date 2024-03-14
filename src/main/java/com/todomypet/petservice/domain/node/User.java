@@ -8,6 +8,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Node("User")
@@ -33,14 +34,11 @@ public class User {
     @Property("profilePicUrl")
     private String profilePicUrl;
 
-    @Property("oauthKey")
-    private String oauthKey;
-
     @Property("personalCode")
     private String personalCode;
 
-    @Property("petAcquireCount")
-    private Integer petAcquireCount;
+    @Property("todoClearCount")
+    private Integer todoClearCount;
 
     @Property("petEvolveCount")
     private Integer petEvolveCount;
@@ -74,4 +72,10 @@ public class User {
 
     @Property("deleted")
     private Boolean deleted;
+
+    @Property("lastAttendAt")
+    private LocalDate lastAttendAt;
+
+    @Property("authority")
+    private String authority;
 }
