@@ -56,7 +56,7 @@ public class PetServiceImpl implements PetService {
     @Override
     @Transactional
     public void adoptPet(String userId, AdoptPetReqDTO adoptPetReqDTO) {
-        if (adoptRepository.getMainPetByUserId(userId) != null) {
+        if (!adoptRepository.getMainPetByUserId(userId).isEmpty()) {
             return;
         }
 
@@ -312,12 +312,12 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public String getMainPetSeqByUserId(String userId) {
-        Adopt adopt = adoptRepository.getMainPetByUserId(userId);
+        Adopt adopt = adoptRepository.getMainPetByUserId(userId).get(0);
 
         if (adopt == null) {
             return null;
         } else {
-            return adoptRepository.getMainPetByUserId(userId).getSeq();
+            return adoptRepository.getMainPetByUserId(userId).get(0).getSeq();
         }
     }
 
@@ -333,7 +333,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public GetMainPetInfosResDTO getMainPetInfosByUserId(String userId) {
-        Adopt adopt = adoptRepository.getMainPetByUserId(userId);
+        Adopt adopt = adoptRepository.getMainPetByUserId(userId).get(0);
 
         if (adopt == null) {
             throw new CustomException(ErrorCode.NOT_EXISTS_MAIN_PET);
