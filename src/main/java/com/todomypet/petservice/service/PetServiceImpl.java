@@ -65,7 +65,6 @@ public class PetServiceImpl implements PetService {
                 userServiceClient.increaseCollectionCountByUserId(userId);
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new CustomException(ErrorCode.FEIGN_CLIENT_ERROR);
             }
         }
 
