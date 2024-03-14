@@ -60,7 +60,7 @@ public class PetServiceImpl implements PetService {
             return;
         }
 
-        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId()) == null) {
+        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId()).isEmpty()) {
             try {
                 userServiceClient.increaseCollectionCountByUserId(userId);
             } catch (Exception e) {
@@ -241,7 +241,7 @@ public class PetServiceImpl implements PetService {
                     .petName(p.getPetName())
                     .petImageUrl(p.getPetImageUrl())
                     .petGrade(nextGrade)
-                    .getOrNot(adoptRepository.existsAdoptByUserIdAndPetId(userId, p.getId()) != null)
+                    .getOrNot(!adoptRepository.existsAdoptByUserIdAndPetId(userId, p.getId()).isEmpty())
                     .build();
             response.add(getPetUpgradeChoiceResDTO);
         }
@@ -253,7 +253,7 @@ public class PetServiceImpl implements PetService {
     public UpgradePetResDTO evolvePet(String userId, UpgradePetReqDTO req) {
         log.info(">>> 펫 진화 진입: (userId)" + userId + " " + "(펫 signatureCode)" + req.getSignatureCode());
 
-        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, req.getSelectedPetId()) == null) {
+        if (adoptRepository.existsAdoptByUserIdAndPetId(userId, req.getSelectedPetId()).isEmpty()) {
             int collectionCount = userServiceClient.increaseCollectionCountByUserId(userId).getData();
         }
 
