@@ -11,5 +11,4 @@ public class UpgradePetResDTO {
     private String currentName;
     private String selectPetOriginName;
     private String petImageUrl;
-    private int achCondition;
 }

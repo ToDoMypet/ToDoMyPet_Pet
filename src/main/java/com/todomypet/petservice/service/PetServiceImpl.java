@@ -286,8 +286,6 @@ public class PetServiceImpl implements PetService {
                     UlidCreator.getUlid().toString(), adopt.getSignatureCode(), adopt.isRenameOrNot());
         }
 
-        // int evolveCount = userServiceClient.increaseAndGetPetEvolveCountByUserId(userId).getData();
-
         return UpgradePetResDTO.builder().renameOrNot(adopt.isRenameOrNot()).originName(originName)
                 .currentName(currentName).selectPetOriginName(newName)
                 .petImageUrl(selectedPet.getPetImageUrl()).build();
@@ -309,10 +307,8 @@ public class PetServiceImpl implements PetService {
 
         adoptRepository.graduatePetBySeq(userId, req.getPetSeq());
 
-        int condition = userServiceClient.increaseAndGetPetCompleteCountByUserId(userId).getData();
-
         return GraduatePetResDTO.builder().petName(adopt.getName())
-                .petImageUrl(pet.getPetImageUrl()).achCondition(condition).build();
+                .petImageUrl(pet.getPetImageUrl()).build();
     }
 
     @Override

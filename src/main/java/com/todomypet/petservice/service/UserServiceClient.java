@@ -17,12 +17,6 @@ public interface UserServiceClient {
     @PutMapping(value = "/increase-collection-count", consumes = "application/json")
     FeignClientResDTO<Integer> increaseCollectionCountByUserId(@RequestHeader String userId);
 
-    @PutMapping(value = "/increase-and-get-pet-evolve-count", consumes = "application/json")
-    FeignClientResDTO<Integer> increasePetEvolveCountByUserId(@RequestHeader String userId);
-
-    @PutMapping(value = "/increase-and-get-pet-complete-count", consumes = "application/json")
-    FeignClientResDTO<Integer> increaseAndGetPetCompleteCountByUserId(@RequestHeader String userId);
-
     @PostMapping(value = "/achievement/achieve-or-not", consumes = "application/json")
     FeignClientResDTO<CheckAchieveOrNotResDTO> checkAchieveOrNot(@RequestHeader String userId,
                                                                  @RequestBody CheckAchieveOrNotReqDTO req);
