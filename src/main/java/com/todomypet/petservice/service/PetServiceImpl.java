@@ -61,11 +61,7 @@ public class PetServiceImpl implements PetService {
         }
 
         if (adoptRepository.existsAdoptByUserIdAndPetId(userId, adoptPetReqDTO.getPetId()).isEmpty()) {
-            try {
-                userServiceClient.increaseCollectionCountByUserId(userId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            int response = userServiceClient.increaseCollectionCountByUserId(userId).getData();
         }
 
         StringBuilder signatureCode = new StringBuilder();
@@ -87,7 +83,6 @@ public class PetServiceImpl implements PetService {
         adoptRepository.createAdoptBetweenAdoptAndUser(userId, adoptPetReqDTO.getPetId(),
                 adoptPetReqDTO.getName(), UlidCreator.getUlid().toString(), signatureCode.toString(),
                 adoptPetReqDTO.isRenameOrNot());
-
     }
 
     @Override
