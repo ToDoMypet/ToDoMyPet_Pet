@@ -203,19 +203,13 @@ public class PetServiceImpl implements PetService {
         log.info(">>> 경험치 획득 진입: (유저)" + userId + "/ (펫 seqId)" +
                 updateExperiencePointReqDTO.getPetSeqId() + " (기존 경험치)" + adoptRepository.getExperiencePointBySeqId(userId,
                 updateExperiencePointReqDTO.getPetSeqId()));
-        if (adoptRepository.getAdoptBySeq(userId, updateExperiencePointReqDTO.getPetSeqId()).isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_EXISTS_ADOPT_RELATIONSHIP);
-        };
+        String petSeq = adoptRepository.getMainPetByUserId(userId).get(0).getSeq();
 
-        adoptRepository.updateExperiencePoint(userId, updateExperiencePointReqDTO.getPetSeqId(),
+        adoptRepository.updateExperiencePoint(userId, petSeq,
                 updateExperiencePointReqDTO.getExperiencePoint());
 
         int updatedExp = adoptRepository.getExperiencePointBySeqId(userId,
                 updateExperiencePointReqDTO.getPetSeqId());
-
-        log.info(">>> 경험치 획득 완료: (유저)" + userId + "/ (펫 seqId)" +
-                updateExperiencePointReqDTO.getPetSeqId() + " (갱신 경험치)" + adoptRepository.getExperiencePointBySeqId(userId,
-                updateExperiencePointReqDTO.getPetSeqId()));
 
         return UpdateExperiencePointResDTO.builder().updatedExperiencePoint(updatedExp).build();
     }
