@@ -130,7 +130,7 @@ public class PetController {
     }
 
     @Hidden
-    @GetMapping("/get-main-pet-infos")
+    @PostMapping("/get-main-pet-infos")
     public SuccessResDTO<GetMainPetInfosResDTO> getMainPetInfos(@RequestHeader String userId) {
         GetMainPetInfosResDTO response = petService.getMainPetInfosByUserId(userId);
         return new SuccessResDTO<>(response);
